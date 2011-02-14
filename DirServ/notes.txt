@@ -70,6 +70,7 @@ with indentifying and repiecing.
 The headers are formatted like this:
 00 03 00 00 00 00 00 00 00 08 00 00 91 0D 00 00
 Where the 5th byte represents which piece of the whole stream it is.
+And the 13th and 14th bytes represent the size of the stream (91 0D = 0x91D = 2333 bytes)
 Example, the 3rd chunk will have this header:
 00 03 00 00 02 00 00 00 00 08 00 00 91 0D 00 00
 After the header, all the zone listing information starts to pour in.
@@ -83,7 +84,7 @@ and in the case of Soccer Brawl and USL it's 02. Mechanized Skirmish is 04.
 Faydon Lake is 0E
 I can't find ANY connection with these numbers in the zonelist.
 The next 5 bytes are consistently the same: 00 01 00 9B 00
-The next 32 bytes are the zone name, delimited/ended with a 00
+The next 32 bytes are the zone name, there's a 00 at the end to specify end of the zone name
 The next byte is an integer, the 7th value in the zone list file (usually 50): 32
 The next byte appears to be the 5th value in the zone list file, consistently 0: 00
 The next byte seems to be the 8th value in the zone list file, whether the zone is
@@ -104,8 +105,15 @@ Where the 5th byte is replaced with the number of the chunk it has just recieved
 Example, after recieving the 3rd chunk, the client replies:
 00 0B 00 10 02 00 00 00
 
-This continues until the server sends one last packet, 17 bytes in size,
-with the same headers as before and the appropriate chunk number, but the 17th byte in the
-byte array being 00
+This continues until there is no more data to send, and server sends a packet, 8 bytes in size,
 indicating that the stream of data is over.
-There is no response from the client after this, and the directory server communication halts.
+00 0b 00 71 00 00 00 00
+
+Client responds with another 8 byte packet, with the first 2 bytes constantly being: 00 07
+and the last byte being: 09.
+All bytes inbetween seem to have no easily definitive meaning.
+
+Server responds with one final packet that seems to tell the client that the stream is over.
+It's 12 bytes in size.
+The first 3 bytes are always 00 06 91, and the last byte is 11.
+Everything inbetween, again, seems to have no easily definitive meaning.
