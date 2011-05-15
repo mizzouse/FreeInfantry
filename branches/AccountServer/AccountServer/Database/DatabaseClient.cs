@@ -40,6 +40,11 @@ namespace AccountServer.Database
 
         public Account AccountCreate(string username, string password, string ticket, DateTime dateCreated, DateTime lastAccess, int permission)
         {
+            if (UsernameExists(username))
+            {
+                return null;
+            }
+
             var _createAccountCmd = new SqlCommand(_strCreateAccount, _connection);
 
             _createAccountCmd.Parameters.AddWithValue("@name", username);

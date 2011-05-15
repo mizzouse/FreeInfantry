@@ -14,39 +14,87 @@ namespace AccountServer.Controllers
         private DatabaseClient _dbClient = new DatabaseClient();
 
         /// <summary>
+        /// Registers a new account with the server.
         /// 
+        /// 
+        /// The client is expected to send a "PUT" request to the Create URL with the following form fields:
+        /// 
+        ///     username - Valid username
+        ///     email    - Valid email
+        ///     password - SHA1 password hash
+        /// 
+        /// 
+        /// Only a response code is returned to the client:
+        /// 
+        ///     201 (Created)        -- The successful response; Account created.
+        /// 
+        ///     400 (Bad Request)    -- The form fields are missing or not in the right format.
+        /// 
+        ///     403 (Forbidden)      -- Account already exists.
+        /// 
+        ///     406 (Not Acceptable) -- Credentials are weak (username or email fail validation).
+        /// 
+        ///     500 (Internal Error) -- Issue with the server.
         /// </summary>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <param name="collection">Form data passed in by the client</param>
+        /// <returns>A response object for the client</returns>
         [HttpPut]
         public ActionResult Create(FormCollection collection)
         {
             var registration = new Account.RegistrationRequestModel();
 
-            // Is the data valid?
+            // 1. Try to parse the form data
             if(!registration.TryParseForm(collection))
             {
-                // Return a response informing the client that the request did not go through.
+                Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                return new EmptyResult();
             }
 
-            // Is the account already registered?
-            Account a = _dbClient.AccountCreate(registration.Username, registration.Password, Guid.NewGuid().ToString(),
-                                                DateTime.Now, DateTime.Now, 0);
-
-            if (null == a)
+            // 2. Has the account already been registered?
+            if(_dbClient.UsernameExists(registration.Username))
             {
-                Response.StatusCode = (int)HttpStatusCode.ResetContent;
+                Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                return new EmptyResult();
+            }
+
+            // 3. Are the credentials good?
+            if(!Account.IsValidUsername(registration.Username))
+            {
+                Response.StatusCode = (int) HttpStatusCode.NotAcceptable;
+                return new EmptyResult();
+            }
+
+            // 4. Create!
+            if(null != _dbClient.AccountCreate(registration.Username, registration.Password, Guid.NewGuid().ToString(), DateTime.Now, DateTime.Now, 0))
+            {
+                Response.StatusCode = (int) HttpStatusCode.Created;
             }
             else
             {
-                Response.StatusCode = (int)HttpStatusCode.Created;
+                // Oh uh!
+                Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             }
 
             return new EmptyResult();
         }
 
         /// <summary>
+        /// Logins an account with the server.
         /// 
+        /// 
+        /// The client is expected to send a "POST" request to the Login URL with the following form fields:
+        /// 
+        ///     username - Valid username
+        ///     password - SHA1 password hash
+        /// 
+        /// 
+        /// A response code, including a JSON payload containing the Session Id is returned:
+        /// 
+        ///     200 (OK)             -- The successful response; account logged in.
+        /// 
+        ///     400 (Bad Request)    -- The form fields are missing or not in the right format.
+        /// 
+        ///     404 (Not Found)      -- The username or password are invalid.
         /// </summary>
         /// <param name="collection"></param>
         /// <returns></returns>
@@ -55,25 +103,23 @@ namespace AccountServer.Controllers
         {
             var login = new Account.LoginRequestModel();
 
-            // Is the data valid?
+            // 1. Try to parse form data
             if(!login.TryParseForm(collection))
             {
-                // Return a response informing the client that the request did not go through.
-            }
-
-            // Account non-existing / the credentials incorrect?
-            Account a = _dbClient.AccountLogin(login.Username, login.Password);
-
-            // Oh uh! Account not found? Invalid credentials?
-            if(null == a)
-            {
-                Response.StatusCode = (int) HttpStatusCode.ResetContent;
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return new EmptyResult();
             }
 
-            // Everything OK! Send the account information!
-            var responseData = new Account.LoginResponseModel {SessionId = a.SessionId};
+            // 2. Account credentials good?
+            Account a = _dbClient.AccountLogin(login.Username, login.Password);
+            if(a == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
+                return new EmptyResult();
+            }
 
+            // 4. Login and send the user their session id!
+            var responseData = new Account.LoginResponseModel {SessionId = a.SessionId};
             var result = new JsonResult {Data = responseData};
             return result;
         }

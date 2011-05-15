@@ -5,6 +5,31 @@ namespace AccountServer.Models
 {
     public class Account
     {
+        #region Validators
+
+        /// <summary>
+        /// Returns true if the username is at least four characters long.
+        /// </summary>
+        /// <param name="username">The username to verify</param>
+        /// <returns>true if valid</returns>
+        public static bool IsValidUsername(string username)
+        {
+            return username.Length >= 4;
+        }
+
+        /// <summary>
+        /// Returns true if the email is valid.
+        /// </summary>
+        /// <param name="email">The email to verify</param>
+        /// <returns>true if valid</returns>
+        public static bool IsValidEmail(string email)
+        {
+            return email.Contains("@");
+        }
+
+        #endregion
+
+
         #region Database Fields
 
         /// <summary>
@@ -21,6 +46,11 @@ namespace AccountServer.Models
         /// Account's hashed password.
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary>
+        /// Account's email.
+        /// </summary>
+        public string Email { get; set; }
 
         /// <summary>
         /// Secret Session Id for this account.
