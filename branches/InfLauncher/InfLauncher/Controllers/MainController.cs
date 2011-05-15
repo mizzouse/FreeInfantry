@@ -64,7 +64,10 @@ namespace InfLauncher.Controllers
         /// <param name="password">The password to register</param>
         public void RegisterAccount(string username, string password)
         {
-            _connection.BeginRegisterAccount(username, password);
+            if(!_connection.BeginRegisterAccount(username, password))
+            {
+                MessageBox.Show("There was an error processing your request; please try again later.");
+            }
         }
 
         /// <summary>
@@ -74,7 +77,10 @@ namespace InfLauncher.Controllers
         /// <param name="password">The password</param>
         public void LoginAccount(string username, string password)
         {
-            _connection.BeginLoginAccount(username, password);
+            if(!_connection.BeginLoginAccount(username, password))
+            {
+                MessageBox.Show("There was an error processing your request; please try again later.");
+            }
         }
 
         /// <summary>
@@ -94,34 +100,45 @@ namespace InfLauncher.Controllers
         /// <summary>
         /// Handles a response from the account server for a pending registration.
         /// </summary>
-        /// <param name="successful">true if accoutn registration is successful</param>
-        public void OnAccountRegistrationResponse(bool successful)
+        /// <param name="response">Details of the registration response</param>
+        public void OnAccountRegistrationResponse(RegistrationResponse response)
         {
-            if(successful)
+            switch(response.Status)
             {
-                MessageBox.Show("Account successfully registered");
-            }
-            else
-            {
-                MessageBox.Show("Your account could not be registered.");
+                case RegistrationStatusCode.Ok:
+                    MessageBox.Show("Your account has been successfully registered.");
+                    break;
+
+                case RegistrationStatusCode.UsernameTaken:
+                    MessageBox.Show("The requested username is already taken. Please try again");
+                    break;
+
+                case RegistrationStatusCode.ServerError:
+                    MessageBox.Show("Your request could not be processed. A server-side error has occured.");
+                    break;
             }
         }
 
         /// <summary>
         /// Handles a response from the account server for a pending login.
         /// </summary>
-        /// <param name="sessionId">Session Id for this player if successfully logged in; null otherwise</param>
-        public void OnAccountLoginResponse(string sessionId)
+        /// <param name="response">Details of the login response</param>
+        public void OnAccountLoginResponse(LoginResponse response)
         {
-            if(sessionId == null)
+            switch(response.Status)
             {
-                MessageBox.Show("Could not login.");
-            }
-            else
-            {
-                MessageBox.Show("Logged in!");
-                _sessionId = sessionId;
-                Form.SetPlayButtonState(true);
+                case LoginStatusCode.Ok:
+                    _sessionId = response.Guid;
+                    Form.SetPlayButtonState(true);
+                    break;
+
+                case LoginStatusCode.InvalidCredentials:
+                    MessageBox.Show("Invalid username or password. Please try again.");
+                    break;
+
+                case LoginStatusCode.ServerError:
+                    MessageBox.Show("Your request could not be processed. A server-side error has occured.");
+                    break;
             }
         }
 
