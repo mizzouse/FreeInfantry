@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using AccountServer.Models;
@@ -10,7 +11,6 @@ namespace AccountServer.Database
     /// </summary>
     public class DatabaseClient
     {
-        private SHA1CryptoServiceProvider _cryptoProvider;
         private SqlConnection _connection;
         private string _connString;
 
@@ -19,8 +19,8 @@ namespace AccountServer.Database
         private String _strLatestIdentity = "SELECT @@IDENTITY";
 
         private String _strCreateAccount =
-            "INSERT INTO account (name, password, ticket, dateCreated, lastAccess, permission) VALUES " +
-            "(@name, @password, @ticket, @dateCreated, @lastAccess, @permission)";
+            "INSERT INTO account (name, password, ticket, dateCreated, lastAccess, permission, email) VALUES " +
+            "(@name, @password, @ticket, @dateCreated, @lastAccess, @permission, @email)";
 
         private String _strUsernameExists = "SELECT * FROM account WHERE name LIKE @name";
 
@@ -31,14 +31,14 @@ namespace AccountServer.Database
         public DatabaseClient()
         {
             _connString =
-                "Data Source=localhost; Initial Catalog=Infantry; Trusted_Connection=True;";
+                "Server=97.81.198.67\\INFANTRY,6658;Database=Infantry;Uid=AccountServer;Pwd=cocks;";
 
             _connection = new SqlConnection(_connString);
 
             _connection.Open();
         }
 
-        public Account AccountCreate(string username, string password, string ticket, DateTime dateCreated, DateTime lastAccess, int permission)
+        public Account AccountCreate(string username, string password, string ticket, DateTime dateCreated, DateTime lastAccess, int permission, string email)
         {
             if (UsernameExists(username))
             {
@@ -53,6 +53,7 @@ namespace AccountServer.Database
             _createAccountCmd.Parameters.AddWithValue("@dateCreated", dateCreated);
             _createAccountCmd.Parameters.AddWithValue("@lastAccess", lastAccess);
             _createAccountCmd.Parameters.AddWithValue("@permission", permission);
+            _createAccountCmd.Parameters.AddWithValue("@email", email);
 
             if(_createAccountCmd.ExecuteNonQuery() != 1)
             {
@@ -66,7 +67,8 @@ namespace AccountServer.Database
                            SessionId = Guid.Parse(ticket),
                            Username = username,
                            Password = password,
-                           Permission = permission
+                           Permission = permission,
+                           Email = email
                        };
         }
 

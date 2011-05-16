@@ -65,7 +65,8 @@ namespace AccountServer.Controllers
             }
 
             // 4. Create!
-            if(null != _dbClient.AccountCreate(registration.Username, registration.Password, Guid.NewGuid().ToString(), DateTime.Now, DateTime.Now, 0))
+            if(null != _dbClient.AccountCreate(registration.Username, registration.Password, 
+                Guid.NewGuid().ToString(), DateTime.Now, DateTime.Now, 0, registration.Email))
             {
                 Response.StatusCode = (int) HttpStatusCode.Created;
             }
@@ -119,7 +120,7 @@ namespace AccountServer.Controllers
             }
 
             // 4. Login and send the user their session id!
-            var responseData = new Account.LoginResponseModel {SessionId = a.SessionId};
+            var responseData = new Account.LoginResponseModel {TicketId = a.SessionId};
             var result = new JsonResult {Data = responseData};
             return result;
         }

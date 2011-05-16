@@ -81,6 +81,7 @@ namespace AccountServer.Models
         {
             public string Username { get; set; }
             public string Password { get; set; }
+            public string Email { get; set; }
 
             /// <summary>
             /// Returns true if the values are correctly parsed from the form; false otherwise.
@@ -92,8 +93,16 @@ namespace AccountServer.Models
                 if(form == null)
                     throw new ArgumentNullException("form");
 
-                Username = form["username"];
-                Password = form["password"];
+                try
+                {
+                    Username = form["username"];
+                    Password = form["password"];
+                    Email = form["email"];
+                }
+                catch
+                {
+                    return false;
+                }
 
                 return true;
             }
@@ -109,8 +118,16 @@ namespace AccountServer.Models
                 if(form == null)
                     throw new ArgumentNullException("form");
 
-                Username = form["username"];
-                Password = form["password"];
+                try
+                {
+                    Username = form["username"];
+                    Password = form["password"];
+                }
+                catch
+                {
+                    return false;
+                }
+                
 
                 return true;
             }
@@ -118,7 +135,35 @@ namespace AccountServer.Models
 
         public class LoginResponseModel
         {
-            public Guid SessionId { get; set; }
+            /// <summary>
+            /// The username associated with this account.
+            /// </summary>
+            public string Username { get; set; }
+
+            /// <summary>
+            /// The email associated with this account.
+            /// </summary>
+            public string Email { get; set; }
+
+            /// <summary>
+            /// The unique ticket associated with this account.
+            /// </summary>
+            public Guid TicketId { get; set; }
+
+            /// <summary>
+            /// Date of creation for this account.
+            /// </summary>
+            public DateTime DateCreated { get; set; }
+
+            /// <summary>
+            /// Last time the account has been accessed.
+            /// </summary>
+            public DateTime LastAccessed { get; set; }
+
+            /// <summary>
+            /// Permission level for this account.
+            /// </summary>
+            public int Permission { get; set; }
         }
 
         #endregion
