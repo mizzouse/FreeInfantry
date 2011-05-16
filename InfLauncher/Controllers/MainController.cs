@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using InfLauncher.Helpers;
+using InfLauncher.Models;
 using InfLauncher.Views;
 
 namespace InfLauncher.Controllers
@@ -62,9 +63,9 @@ namespace InfLauncher.Controllers
         /// </summary>
         /// <param name="username">The username to register</param>
         /// <param name="password">The password to register</param>
-        public void RegisterAccount(string username, string password)
+        public void RegisterAccount(Account.AccountRegistrationRequestModel requestModel)
         {
-            if(!_connection.BeginRegisterAccount(username, password))
+            if(!_connection.BeginRegisterAccount(requestModel))
             {
                 MessageBox.Show("There was an error processing your request; please try again later.");
             }
@@ -75,9 +76,9 @@ namespace InfLauncher.Controllers
         /// </summary>
         /// <param name="username">The username</param>
         /// <param name="password">The password</param>
-        public void LoginAccount(string username, string password)
+        public void LoginAccount(Account.AccountLoginRequestModel requestModel)
         {
-            if(!_connection.BeginLoginAccount(username, password))
+            if(!_connection.BeginLoginAccount(requestModel))
             {
                 MessageBox.Show("There was an error processing your request; please try again later.");
             }
@@ -128,7 +129,7 @@ namespace InfLauncher.Controllers
             switch(response.Status)
             {
                 case LoginStatusCode.Ok:
-                    _sessionId = response.Guid;
+                    _sessionId = response.Model.TicketId.ToString();
                     Form.SetPlayButtonState(true);
                     break;
 

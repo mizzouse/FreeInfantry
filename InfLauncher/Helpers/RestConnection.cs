@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using InfLauncher.Models;
 using Newtonsoft.Json;
 
 namespace InfLauncher.Helpers
@@ -82,14 +83,14 @@ namespace InfLauncher.Helpers
 
     public class LoginResponse
     {
-        internal LoginResponse(LoginStatusCode status, string guid)
+        internal LoginResponse(LoginStatusCode status, Account.AccountLoginResponseModel model)
         {
             Status = status;
-            Guid = guid;
+            Model = model;
         }
 
         public LoginStatusCode Status { get; private set; }
-        public string Guid { get; private set; }
+        public Account.AccountLoginResponseModel Model { get; private set; }
     }
 
     #endregion
@@ -102,7 +103,7 @@ namespace InfLauncher.Helpers
         /// <summary>
         /// The base URL address (including the port) of the account server.
         /// </summary>
-        public static string BaseDomain = "http://localhost:52940";
+        public static string BaseDomain = "http://localhost:1330/AccountServer";
 
         /// <summary>
         /// Relative path of the URL to create accounts.
@@ -149,19 +150,20 @@ namespace InfLauncher.Helpers
         /// 
         /// When the response (if any) is received, the listeners associated with OnRegisterAccountResponse will be notified.
         /// </summary>
-        /// <param name="username">Account's username</param>
-        /// <param name="password">Account's password</param>
+        /// <param name="requestModel">Data model for the registration request</param>
         /// <returns>true if successfully started; false otherwise</returns>
-        public bool BeginRegisterAccount(string username, string password)
+        public bool BeginRegisterAccount(Account.AccountRegistrationRequestModel requestModel)
         {
-            if (username == null)
-                throw new ArgumentNullException("username");
-            if (password == null)
-                throw new ArgumentNullException("password");
+            if (requestModel == null)
+            {
+                throw new ArgumentNullException("requestModel");
+            }
 
             // Create the registration form
-            string passwordHash = CalculateHashFor(password);
-            byte[] form = Encoding.UTF8.GetBytes(String.Format("username={0}&password={1}", username, passwordHash));
+            requestModel.PasswordHash = CalculateHashFor(requestModel.PasswordHash);
+            byte[] form =
+                Encoding.UTF8.GetBytes(String.Format("username={0}&password={1}&email={2}", requestModel.Username,
+                                                     requestModel.PasswordHash, requestModel.Email));
 
             // Create the request
             var request = (HttpWebRequest) WebRequest.Create(RegisterUrl);
@@ -189,19 +191,20 @@ namespace InfLauncher.Helpers
         /// 
         /// When the response (if any) is received, the listeners associated with OnLoginAccountResponse will be notified.
         /// </summary>
-        /// <param name="username">Account's username</param>
-        /// <param name="password">Account's password</param>
+        /// <param name="requestModel">Data model for the login request</param>
         /// <returns>true if successfully started; false otherwise</returns>
-        public bool BeginLoginAccount(string username, string password)
+        public bool BeginLoginAccount(Account.AccountLoginRequestModel requestModel)
         {
-            if (username == null)
-                throw new ArgumentNullException("username");
-            if (password == null)
-                throw new ArgumentNullException("password");
+            if(requestModel == null)
+            {
+                throw new ArgumentNullException("requestModel");
+            }
 
             // Create the login form
-            string passwordHash = CalculateHashFor(password);
-            byte[] form = Encoding.UTF8.GetBytes(String.Format("username={0}&password={1}", username, passwordHash));
+            requestModel.PasswordHash = CalculateHashFor(requestModel.PasswordHash);
+            byte[] form =
+                Encoding.UTF8.GetBytes(String.Format("username={0}&password={1}", requestModel.Username,
+                                                     requestModel.PasswordHash));
 
             // Create the request
             var request = (HttpWebRequest) WebRequest.Create(LoginUrl);
@@ -282,7 +285,7 @@ namespace InfLauncher.Helpers
         private void AsyncLoginAccountResponse(IAsyncResult result)
         {
             LoginStatusCode status = LoginStatusCode.ServerError;
-            string sessionId = null;
+            Account.AccountLoginResponseModel responseModel = null;
 
             var request = result.AsyncState as HttpWebRequest;
 
@@ -294,9 +297,7 @@ namespace InfLauncher.Helpers
                 {
                     // Grab the session id.
                     var reader = new StreamReader(response.GetResponseStream());
-                    var responseData = JsonConvert.DeserializeObject<LoginResponseData>(reader.ReadToEnd());
-
-                    sessionId = responseData.SessionId.ToString();
+                    responseModel = JsonConvert.DeserializeObject<Account.AccountLoginResponseModel>(reader.ReadToEnd());
 
                     status = LoginStatusCode.Ok;
                 }
@@ -322,7 +323,7 @@ namespace InfLauncher.Helpers
                 }
             }
 
-            OnLoginAccountResponse(new LoginResponse(status, sessionId));
+            OnLoginAccountResponse(new LoginResponse(status, responseModel));
         }
 
         #endregion

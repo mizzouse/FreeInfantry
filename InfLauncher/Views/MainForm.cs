@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows.Forms;
 using InfLauncher.Controllers;
+using InfLauncher.Models;
 
 namespace InfLauncher.Views
 {
@@ -33,7 +34,7 @@ namespace InfLauncher.Views
             var username = txtboxUsername.Text;
             var password = txtboxPassword.Text;
 
-            _controller.LoginAccount(username, password);
+            _controller.LoginAccount(new Account.AccountLoginRequestModel(username, password));
         }
 
         private void btnNewAccount_Click(object sender, System.EventArgs e)
