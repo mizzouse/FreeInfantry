@@ -34,6 +34,8 @@
             this.txtboxPassword = new System.Windows.Forms.TextBox();
             this.lblPassword = new System.Windows.Forms.Label();
             this.btnCreate = new System.Windows.Forms.Button();
+            this.txtboxEmail = new System.Windows.Forms.TextBox();
+            this.lblEmail = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtboxUsername
@@ -71,7 +73,7 @@
             // 
             // btnCreate
             // 
-            this.btnCreate.Location = new System.Drawing.Point(119, 129);
+            this.btnCreate.Location = new System.Drawing.Point(119, 186);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(75, 23);
             this.btnCreate.TabIndex = 4;
@@ -79,11 +81,29 @@
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
             // 
+            // txtboxEmail
+            // 
+            this.txtboxEmail.Location = new System.Drawing.Point(12, 141);
+            this.txtboxEmail.Name = "txtboxEmail";
+            this.txtboxEmail.Size = new System.Drawing.Size(182, 20);
+            this.txtboxEmail.TabIndex = 5;
+            // 
+            // lblEmail
+            // 
+            this.lblEmail.AutoSize = true;
+            this.lblEmail.Location = new System.Drawing.Point(9, 125);
+            this.lblEmail.Name = "lblEmail";
+            this.lblEmail.Size = new System.Drawing.Size(32, 13);
+            this.lblEmail.TabIndex = 6;
+            this.lblEmail.Text = "Email";
+            // 
             // NewAccountForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(206, 164);
+            this.ClientSize = new System.Drawing.Size(206, 221);
+            this.Controls.Add(this.lblEmail);
+            this.Controls.Add(this.txtboxEmail);
             this.Controls.Add(this.btnCreate);
             this.Controls.Add(this.lblPassword);
             this.Controls.Add(this.txtboxPassword);
@@ -105,5 +125,7 @@
         private System.Windows.Forms.TextBox txtboxPassword;
         private System.Windows.Forms.Label lblPassword;
         private System.Windows.Forms.Button btnCreate;
+        private System.Windows.Forms.TextBox txtboxEmail;
+        private System.Windows.Forms.Label lblEmail;
     }
 }

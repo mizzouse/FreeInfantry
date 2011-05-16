@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using InfLauncher.Controllers;
+using InfLauncher.Models;
 
 namespace InfLauncher.Views
 {
@@ -30,8 +31,9 @@ namespace InfLauncher.Views
         {
             var username = txtboxUsername.Text;
             var password = txtboxPassword.Text;
+            var email = txtboxEmail.Text;
 
-            _controller.RegisterAccount(username, password);
+            _controller.RegisterAccount(new Account.AccountRegistrationRequestModel(username, password, email));
         }
     }
 }
