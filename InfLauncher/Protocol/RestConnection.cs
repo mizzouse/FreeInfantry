@@ -6,7 +6,7 @@ using System.Text;
 using InfLauncher.Models;
 using Newtonsoft.Json;
 
-namespace InfLauncher.Helpers
+namespace InfLauncher.Protocol
 {
     #region Application-level Status Codes
 

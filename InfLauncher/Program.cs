@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using InfLauncher.Controllers;
 
 namespace InfLauncher
@@ -11,7 +12,10 @@ namespace InfLauncher
         [STAThread]
         static void Main()
         {
-            new MainController().RunApplication();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            Application.Run(new MainController());
         }
     }
 }

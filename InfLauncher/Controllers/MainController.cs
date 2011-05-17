@@ -1,7 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
-using InfLauncher.Helpers;
 using InfLauncher.Models;
+using InfLauncher.Protocol;
 using InfLauncher.Views;
 
 namespace InfLauncher.Controllers
@@ -9,8 +10,13 @@ namespace InfLauncher.Controllers
     /// <summary>
     /// The MainController handles all connection and inter-view events.
     /// </summary>
-    public class MainController
+    public class MainController : ApplicationContext
     {
+        /// <summary>
+        /// Controller that updates assets as needed.
+        /// </summary>
+        private AssetDownloadController assetController;
+
         /// <summary>
         /// The connection associated with this controller.
         /// </summary>
@@ -36,23 +42,30 @@ namespace InfLauncher.Controllers
         /// </summary>
         public MainController()
         {
+            // Configure connection with the account server
             _connection = new RestConnection();
 
             _connection.OnRegisterAccountResponse += OnAccountRegistrationResponse;
             _connection.OnLoginAccountResponse += OnAccountLoginResponse;
+
+            // Configure connection with the asset server
+            assetController = new AssetDownloadController("http://soecontent.station.sony.com/patch/lp2/infantry/en-main/");
+            assetController.OnUpdatingFinished += OnUpdatingFinished;
+
+            // Start for updates, go from there
+            assetController.RunAsync();
         }
 
-        public void RunApplication()
+        #region Updater Delegate Handlers
+
+        private void OnUpdatingFinished()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            newAccountForm = new NewAccountForm(this);
             mainForm = new MainForm(this);
-
-            Application.Run(mainForm);
+            mainForm.Closing += OnFormClosing;
+            mainForm.Show();
         }
 
+        #endregion
 
         #region Form Creation and Event Handlers
 
@@ -106,6 +119,14 @@ namespace InfLauncher.Controllers
         public string GetSessionId()
         {
             return _sessionId;
+        }
+
+        private void OnFormClosing(object sender, CancelEventArgs e)
+        {
+            if(sender is MainForm)
+            {
+                ExitThread();
+            }
         }
 
         #endregion
