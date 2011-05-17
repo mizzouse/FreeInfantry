@@ -11,6 +11,22 @@ namespace InfLauncher.Helpers
     #region Application-level Status Codes
 
     /// <summary>
+    /// A status code that is returned when the request is first sent off to the server.
+    /// </summary>
+    public enum BeginRequestStatusCode
+    {
+        /// <summary>
+        /// The request is successfully sent.
+        /// </summary>
+        Ok,
+
+        /// <summary>
+        /// An error sending the request has occured.
+        /// </summary>
+        Error
+    }
+
+    /// <summary>
     /// Status codes for account registration requests.
     /// </summary>
     public enum RegistrationStatusCode
@@ -152,7 +168,7 @@ namespace InfLauncher.Helpers
         /// </summary>
         /// <param name="requestModel">Data model for the registration request</param>
         /// <returns>true if successfully started; false otherwise</returns>
-        public bool BeginRegisterAccount(Account.AccountRegistrationRequestModel requestModel)
+        public BeginRequestStatusCode BeginRegisterAccount(Account.AccountRegistrationRequestModel requestModel)
         {
             if (requestModel == null)
             {
@@ -178,12 +194,20 @@ namespace InfLauncher.Helpers
             }
             catch (WebException)
             {
-                return false;
+                return BeginRequestStatusCode.Error;
             }
 
             // Off it goes!
-            request.BeginGetResponse(AsyncRegisterAccountResponse, request);
-            return true;
+            try
+            {
+                request.BeginGetResponse(AsyncRegisterAccountResponse, request);
+            }
+            catch (Exception)
+            {
+                return BeginRequestStatusCode.Error;
+            }
+
+            return BeginRequestStatusCode.Ok;
         }
 
         /// <summary>
@@ -193,7 +217,7 @@ namespace InfLauncher.Helpers
         /// </summary>
         /// <param name="requestModel">Data model for the login request</param>
         /// <returns>true if successfully started; false otherwise</returns>
-        public bool BeginLoginAccount(Account.AccountLoginRequestModel requestModel)
+        public BeginRequestStatusCode BeginLoginAccount(Account.AccountLoginRequestModel requestModel)
         {
             if(requestModel == null)
             {
@@ -219,12 +243,20 @@ namespace InfLauncher.Helpers
             }
             catch (WebException)
             {
-                return false;
+                return BeginRequestStatusCode.Error;
             }
 
             // Off it goes!
-            request.BeginGetResponse(AsyncLoginAccountResponse, request);
-            return true;
+            try
+            {
+                request.BeginGetResponse(AsyncLoginAccountResponse, request);
+            }
+            catch (Exception)
+            {
+                return BeginRequestStatusCode.Error;
+            }
+
+            return BeginRequestStatusCode.Ok;
         }
 
         #endregion

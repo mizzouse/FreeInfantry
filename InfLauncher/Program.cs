@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 using InfLauncher.Controllers;
-using InfLauncher.Views;
 
 namespace InfLauncher
 {
@@ -15,15 +11,7 @@ namespace InfLauncher
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            var controller = new MainController();
-            var form = new MainForm(controller);
-
-            controller.Form = form;
-            
-            Application.Run(form);
+            new MainController().RunApplication();
         }
     }
 }
