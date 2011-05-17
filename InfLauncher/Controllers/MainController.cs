@@ -114,8 +114,16 @@ namespace InfLauncher.Controllers
                     MessageBox.Show("The requested username is already taken. Please try again");
                     break;
 
+                case RegistrationStatusCode.WeakCredentials:
+                    MessageBox.Show("Double-check your username and email address.");
+                    break;
+
                 case RegistrationStatusCode.ServerError:
                     MessageBox.Show("Your request could not be processed. A server-side error has occured.");
+                    break;
+
+                case RegistrationStatusCode.MalformedData:
+                    MessageBox.Show("An internal client error has occured. Your request could not be processed.");
                     break;
             }
         }
@@ -139,6 +147,10 @@ namespace InfLauncher.Controllers
 
                 case LoginStatusCode.ServerError:
                     MessageBox.Show("Your request could not be processed. A server-side error has occured.");
+                    break;
+
+                case LoginStatusCode.MalformedData:
+                    MessageBox.Show("An internal client error has occured. Your request could not be processed.");
                     break;
             }
         }

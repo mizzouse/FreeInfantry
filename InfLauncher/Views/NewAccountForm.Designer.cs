@@ -60,7 +60,7 @@
             this.txtboxPassword.Name = "txtboxPassword";
             this.txtboxPassword.PasswordChar = '*';
             this.txtboxPassword.Size = new System.Drawing.Size(182, 20);
-            this.txtboxPassword.TabIndex = 2;
+            this.txtboxPassword.TabIndex = 1;
             // 
             // lblPassword
             // 
@@ -76,7 +76,7 @@
             this.btnCreate.Location = new System.Drawing.Point(119, 186);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(75, 23);
-            this.btnCreate.TabIndex = 4;
+            this.btnCreate.TabIndex = 3;
             this.btnCreate.Text = "Create";
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
@@ -86,7 +86,7 @@
             this.txtboxEmail.Location = new System.Drawing.Point(12, 141);
             this.txtboxEmail.Name = "txtboxEmail";
             this.txtboxEmail.Size = new System.Drawing.Size(182, 20);
-            this.txtboxEmail.TabIndex = 5;
+            this.txtboxEmail.TabIndex = 2;
             // 
             // lblEmail
             // 
