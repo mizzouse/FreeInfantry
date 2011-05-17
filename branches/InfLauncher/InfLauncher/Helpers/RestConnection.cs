@@ -103,17 +103,17 @@ namespace InfLauncher.Helpers
         /// <summary>
         /// The base URL address (including the port) of the account server.
         /// </summary>
-        public static string BaseDomain = "http://localhost:1330/AccountServer";
+        public static string BaseDomain = "http://localhost:1437";
 
         /// <summary>
         /// Relative path of the URL to create accounts.
         /// </summary>
-        public static string RegisterUrl = String.Format("{0}/Account/Create", BaseDomain);
+        public static string RegisterUrl = String.Format("{0}/Account", BaseDomain);
 
         /// <summary>
         /// Relative path of the URL to login.
         /// </summary>
-        public static string LoginUrl = String.Format("{0}/Account/Login", BaseDomain);
+        public static string LoginUrl = String.Format("{0}/Account", BaseDomain);
 
 
         #region Response Delegates
@@ -161,20 +161,20 @@ namespace InfLauncher.Helpers
 
             // Create the registration form
             requestModel.PasswordHash = CalculateHashFor(requestModel.PasswordHash);
-            byte[] form =
-                Encoding.UTF8.GetBytes(String.Format("username={0}&password={1}&email={2}", requestModel.Username,
-                                                     requestModel.PasswordHash, requestModel.Email));
+            string jsonModel = JsonConvert.SerializeObject(requestModel);
+
+            byte[] contentBody = Encoding.UTF8.GetBytes(jsonModel);
 
             // Create the request
             var request = (HttpWebRequest) WebRequest.Create(RegisterUrl);
             request.Method = "PUT";
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = form.Length;
+            request.ContentType = "application/json";
+            request.ContentLength = contentBody.Length;
 
             try
             {
                 var stream = request.GetRequestStream();
-                stream.Write(form, 0, form.Length);
+                stream.Write(contentBody, 0, contentBody.Length);
             }
             catch (WebException)
             {
@@ -202,20 +202,20 @@ namespace InfLauncher.Helpers
 
             // Create the login form
             requestModel.PasswordHash = CalculateHashFor(requestModel.PasswordHash);
-            byte[] form =
-                Encoding.UTF8.GetBytes(String.Format("username={0}&password={1}", requestModel.Username,
-                                                     requestModel.PasswordHash));
+            string jsonModel = JsonConvert.SerializeObject(requestModel);
+
+            byte[] contentBody = Encoding.UTF8.GetBytes(jsonModel);
 
             // Create the request
             var request = (HttpWebRequest) WebRequest.Create(LoginUrl);
             request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = form.Length;
+            request.ContentType = "application/json";
+            request.ContentLength = contentBody.Length;
 
             try
             {
                 var stream = request.GetRequestStream();
-                stream.Write(form, 0, form.Length);
+                stream.Write(contentBody, 0, contentBody.Length);
             }
             catch (WebException)
             {
@@ -295,8 +295,9 @@ namespace InfLauncher.Helpers
 
                 if(HttpStatusCode.OK == response.StatusCode)
                 {
-                    // Grab the session id.
+                    // Grab the account data.
                     var reader = new StreamReader(response.GetResponseStream());
+
                     responseModel = JsonConvert.DeserializeObject<Account.AccountLoginResponseModel>(reader.ReadToEnd());
 
                     status = LoginStatusCode.Ok;
