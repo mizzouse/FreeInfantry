@@ -24,7 +24,12 @@ namespace InfLauncher.Controllers
         /// <summary>
         /// 
         /// </summary>
-        public MainForm Form { get; set; }
+        private NewAccountForm newAccountForm;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private MainForm mainForm;
 
         /// <summary>
         /// Creates a new MainController and displays the initial form.
@@ -35,6 +40,17 @@ namespace InfLauncher.Controllers
 
             _connection.OnRegisterAccountResponse += OnAccountRegistrationResponse;
             _connection.OnLoginAccountResponse += OnAccountLoginResponse;
+        }
+
+        public void RunApplication()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            newAccountForm = new NewAccountForm(this);
+            mainForm = new MainForm(this);
+
+            Application.Run(mainForm);
         }
 
 
@@ -54,8 +70,7 @@ namespace InfLauncher.Controllers
         /// </summary>
         public void CreateNewAccountForm()
         {
-            var form = new NewAccountForm(this);
-            form.ShowDialog();
+            newAccountForm.ShowDialog();
         }
 
         /// <summary>
@@ -65,7 +80,7 @@ namespace InfLauncher.Controllers
         /// <param name="password">The password to register</param>
         public void RegisterAccount(Account.AccountRegistrationRequestModel requestModel)
         {
-            if(!_connection.BeginRegisterAccount(requestModel))
+            if(_connection.BeginRegisterAccount(requestModel) != BeginRequestStatusCode.Ok)
             {
                 MessageBox.Show("There was an error processing your request; please try again later.");
             }
@@ -78,7 +93,7 @@ namespace InfLauncher.Controllers
         /// <param name="password">The password</param>
         public void LoginAccount(Account.AccountLoginRequestModel requestModel)
         {
-            if(!_connection.BeginLoginAccount(requestModel))
+            if (_connection.BeginLoginAccount(requestModel) != BeginRequestStatusCode.Ok)
             {
                 MessageBox.Show("There was an error processing your request; please try again later.");
             }
@@ -107,6 +122,7 @@ namespace InfLauncher.Controllers
             switch(response.Status)
             {
                 case RegistrationStatusCode.Ok:
+                    newAccountForm.Close();
                     MessageBox.Show("Your account has been successfully registered.");
                     break;
 
@@ -138,7 +154,7 @@ namespace InfLauncher.Controllers
             {
                 case LoginStatusCode.Ok:
                     _sessionId = response.Model.TicketId.ToString();
-                    Form.SetPlayButtonState(true);
+                    mainForm.SetPlayButtonState(true);
                     break;
 
                 case LoginStatusCode.InvalidCredentials:
