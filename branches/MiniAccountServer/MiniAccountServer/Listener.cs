@@ -16,7 +16,7 @@ namespace MiniAccountServer
         private HttpListener listener;
         private DatabaseClient client;
 
-        private string[] prefixes = {@"http://localhost:1437/Account/"};
+        private string[] prefixes = {@"http://0.0.0.0:1437/Account/"};
 
         public Listener()
         {
@@ -66,6 +66,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 400;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
                     string registrationData = new StreamReader(request.InputStream).ReadToEnd();
@@ -75,6 +77,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 400;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
                     
@@ -83,6 +87,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 403;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
 
@@ -91,6 +97,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 406;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
 
@@ -105,6 +113,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 500;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
 
@@ -121,6 +131,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 400;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
                     string loginData = new StreamReader(request.InputStream).ReadToEnd();
@@ -130,6 +142,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 400;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
 
@@ -138,6 +152,8 @@ namespace MiniAccountServer
                     {
                         response.StatusCode = 404;
                         response.OutputStream.Close();
+
+                        break;
                     }
 
 
