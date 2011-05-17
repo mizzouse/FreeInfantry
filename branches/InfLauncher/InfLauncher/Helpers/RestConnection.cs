@@ -103,7 +103,7 @@ namespace InfLauncher.Helpers
         /// <summary>
         /// The base URL address (including the port) of the account server.
         /// </summary>
-        public static string BaseDomain = "http://localhost:1437";
+        public static string BaseDomain = "http://66.135.61.42:1437";
 
         /// <summary>
         /// Relative path of the URL to create accounts.
