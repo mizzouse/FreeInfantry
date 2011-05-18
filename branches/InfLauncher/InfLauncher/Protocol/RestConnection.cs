@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using InfLauncher.Helpers;
 using InfLauncher.Models;
 using Newtonsoft.Json;
 
@@ -119,7 +120,7 @@ namespace InfLauncher.Protocol
         /// <summary>
         /// The base URL address (including the port) of the account server.
         /// </summary>
-        public static string BaseDomain = "http://66.135.61.42:1437";
+        public static string BaseDomain = Config.GetConfig().AccountsUrl;
 
         /// <summary>
         /// Relative path of the URL to create accounts.

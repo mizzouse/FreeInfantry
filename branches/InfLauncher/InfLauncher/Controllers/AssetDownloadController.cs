@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using InfLauncher.Helpers;
 using InfLauncher.Models;
 using InfLauncher.Protocol;
 using InfLauncher.Views;
@@ -46,9 +47,7 @@ namespace InfLauncher.Controllers
         /// <summary>
         /// The default path to the game directory, unless otherwise specified.
         /// </summary>
-        public static string GameDirectory =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                         "Infantry Online");
+        public static string GameDirectory = Config.GetConfig().InstallPath;
 
         #region Delegate Methods
 
@@ -101,7 +100,7 @@ namespace InfLauncher.Controllers
         /// </remarks>
         public void RunAsync()
         {
-            assetDownloader.DownloadAssetFileList("infantry_en-main_manifest.xml");
+            assetDownloader.DownloadAssetFileList(Config.GetConfig().AssetsFileListUrl);
         }
 
         /// <summary>

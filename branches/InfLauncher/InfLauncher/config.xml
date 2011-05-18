@@ -1,0 +1,5 @@
+﻿<launcher>
+    <accounts url="http://66.135.61.42:1437/" />
+    <assets url="http://soecontent.station.sony.com/patch/lp2/infantry/en-main/" filelist="infantry_en-main_manifest.xml"/>
+    <install path="C:/Program Files(x86)/Infantry Online"/>
+</launcher>
