@@ -101,10 +101,12 @@ namespace InfCompress
                     }
                 }
             }
-
             
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Encoding = new UTF8Encoding(false);
+
             // 3. Generate manifest
-            XmlWriter writer = XmlTextWriter.Create("manifest.xml");
+            XmlWriter writer = XmlTextWriter.Create("manifest.xml", settings);
 
             writer.WriteStartDocument();
             writer.WriteStartElement("FIPatcher");
