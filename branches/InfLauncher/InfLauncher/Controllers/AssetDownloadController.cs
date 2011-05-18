@@ -268,10 +268,7 @@ namespace InfLauncher.Controllers
         /// <param name="asset"></param>
         private void OnAssetDownloadCompleted(Asset asset)
         {
-            string gameDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-                                                "Infantry Online");
-
-            using (FileStream fs = File.Create(Path.Combine(gameDirectory, asset.FileName)))
+            using (FileStream fs = File.Create(Path.Combine(GameDirectory, asset.FileName)))
             {
                 using (MemoryStream ms = new MemoryStream(asset.Data))
                 {
