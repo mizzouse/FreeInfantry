@@ -13,7 +13,7 @@ namespace InfLauncher.Views
 {
     public partial class NewAccountForm : Form
     {
-        private MainController _controller = new MainController();
+        private MainController _controller;
 
         public NewAccountForm()
         {
