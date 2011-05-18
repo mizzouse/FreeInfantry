@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdaterForm));
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.lblPleaseWait = new System.Windows.Forms.Label();
             this.lblCurrentFilename = new System.Windows.Forms.Label();
@@ -56,9 +57,8 @@
             this.lblCurrentFilename.AutoSize = true;
             this.lblCurrentFilename.Location = new System.Drawing.Point(12, 64);
             this.lblCurrentFilename.Name = "lblCurrentFilename";
-            this.lblCurrentFilename.Size = new System.Drawing.Size(55, 13);
+            this.lblCurrentFilename.Size = new System.Drawing.Size(0, 13);
             this.lblCurrentFilename.TabIndex = 3;
-            this.lblCurrentFilename.Text = "File name:";
             // 
             // lblFileCount
             // 
@@ -66,18 +66,16 @@
             this.lblFileCount.Location = new System.Drawing.Point(12, 85);
             this.lblFileCount.Name = "lblFileCount";
             this.lblFileCount.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblFileCount.Size = new System.Drawing.Size(31, 13);
+            this.lblFileCount.Size = new System.Drawing.Size(0, 13);
             this.lblFileCount.TabIndex = 4;
-            this.lblFileCount.Text = "Hello";
             // 
             // lblTask
             // 
             this.lblTask.AutoSize = true;
             this.lblTask.Location = new System.Drawing.Point(12, 35);
             this.lblTask.Name = "lblTask";
-            this.lblTask.Size = new System.Drawing.Size(35, 13);
+            this.lblTask.Size = new System.Drawing.Size(0, 13);
             this.lblTask.TabIndex = 5;
-            this.lblTask.Text = "label1";
             // 
             // UpdaterForm
             // 
@@ -90,6 +88,7 @@
             this.Controls.Add(this.lblPleaseWait);
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UpdaterForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Infantry Updater";

@@ -60,6 +60,8 @@ namespace InfLauncher.Controllers
 
         private void OnUpdatingFinished()
         {
+            newAccountForm = new NewAccountForm(this);
+
             mainForm = new MainForm(this);
             mainForm.Closing += OnFormClosing;
             mainForm.Show();

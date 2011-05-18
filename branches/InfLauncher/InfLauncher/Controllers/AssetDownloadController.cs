@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using InfLauncher.Models;
 using InfLauncher.Protocol;
@@ -45,7 +47,7 @@ namespace InfLauncher.Controllers
         /// The default path to the game directory, unless otherwise specified.
         /// </summary>
         public static string GameDirectory =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                          "Infantry Online");
 
         #region Delegate Methods
@@ -78,6 +80,8 @@ namespace InfLauncher.Controllers
 
             numFilesDownloaded = 0;
             numTotalDownloads = 0;
+
+            form.FormClosing += OnUpdaterFormClosing;
 
             assetDownloader = new AssetDownloader(baseUrlDirectory);
 
@@ -135,21 +139,56 @@ namespace InfLauncher.Controllers
 
         private void UpdateAssets(List<AssetDownloader.AssetDescriptor> assetList)
         {
-            downloadList = new List<AssetDownloader.AssetDescriptor>();
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.DoWork += Md5BackgroundWorker;
+            worker.RunWorkerCompleted += Md5BackgroundWorkerCompleted;
+            worker.ProgressChanged += Md5BackgroundWorkerReportProgress;
+            worker.WorkerReportsProgress = true;
 
-            // Go through each file; make sure it exists; make sure the MD5 checksum lines up; otherwise it's time for an update.
-            foreach(var asset in assetList)
+            numFilesDownloaded = 0;
+            numTotalDownloads = assetList.Count;
+
+            form.Show();
+            form.SetCurrentTask("Calculating checksum.");
+            worker.RunWorkerAsync(assetList);
+        }
+
+        private void Md5BackgroundWorker(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            List<AssetDownloader.AssetDescriptor> assetList = (List<AssetDownloader.AssetDescriptor>)e.Argument;
+            List<AssetDownloader.AssetDescriptor> resultList = new List<AssetDownloader.AssetDescriptor>();
+
+            // Go through each file; make sure it exists; make sure the MD5 checksum lines up; otherwise it's time for an update.););
+            foreach (var asset in assetList)
             {
                 string filePath = Path.Combine(GameDirectory, asset.Name);
 
-                if(!File.Exists(filePath) || GetMD5HashFromFile(filePath) != asset.Md5Hash)
+                if (!File.Exists(filePath) || GetMD5HashFromFile(filePath) != asset.Md5Hash)
                 {
-                    downloadList.Add(asset);
+                    resultList.Add(asset);
                 }
+
+                worker.ReportProgress(100);
             }
 
-            if(downloadList.Count == 0)
+            e.Result = resultList;
+        }
+
+        private void Md5BackgroundWorkerReportProgress(object sender, ProgressChangedEventArgs e)
+        {
+            form.SetFileCounts(++numFilesDownloaded, numTotalDownloads);
+            int progress = (int) Math.Ceiling((numFilesDownloaded/(float)numTotalDownloads)*100.0f);
+            form.SetProgress(progress);
+        }
+
+        private void Md5BackgroundWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            List<AssetDownloader.AssetDescriptor> resultList = e.Result as List<AssetDownloader.AssetDescriptor>;
+
+            if (resultList.Count == 0)
             {
+                form.Hide();
                 OnUpdatingFinished();
                 return;
             }
@@ -158,12 +197,20 @@ namespace InfLauncher.Controllers
             form.SetCurrentTask("Updating Infantry Online, please wait.");
 
             numFilesDownloaded = 0;
-            numTotalDownloads = downloadList.Count;
+            numTotalDownloads = resultList.Count;
             form.SetFileCounts(0, numTotalDownloads);
 
-            foreach (var asset in downloadList)
+            foreach (var asset in resultList)
             {
                 DownloadAsset(asset);
+            }
+        }
+
+        private void OnUpdaterFormClosing(Object sender, FormClosingEventArgs e)
+        {
+            if(CloseReason.UserClosing == e.CloseReason)
+            {
+                Application.ExitThread();
             }
         }
 
@@ -244,7 +291,7 @@ namespace InfLauncher.Controllers
             // Are all the files done?
             if(numFilesDownloaded == numTotalDownloads)
             {
-                form.Close();
+                form.Hide();
                 OnUpdatingFinished();
             }
         }

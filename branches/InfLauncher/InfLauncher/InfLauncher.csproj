@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>InfLauncher.exe.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\Libraries\JSON.Net\Bin\Net\Newtonsoft.Json.dll</HintPath>
@@ -51,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\AssetDownloadController.cs" />
+    <Compile Include="Helpers\Config.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Asset.cs" />
     <Compile Include="Protocol\AssetDownloader.cs" />
@@ -93,6 +97,7 @@
     <EmbeddedResource Include="Views\UpdaterForm.resx">
       <DependentUpon>UpdaterForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="InfLauncher.exe.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
