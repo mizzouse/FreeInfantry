@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using InfLauncher.Helpers;
 using InfLauncher.Models;
 using InfLauncher.Protocol;
 using InfLauncher.Views;
@@ -49,7 +50,7 @@ namespace InfLauncher.Controllers
             _connection.OnLoginAccountResponse += OnAccountLoginResponse;
 
             // Configure connection with the asset server
-            assetController = new AssetDownloadController("http://soecontent.station.sony.com/patch/lp2/infantry/en-main/");
+            assetController = new AssetDownloadController(Config.GetConfig().AssetsUrl);
             assetController.OnUpdatingFinished += OnUpdatingFinished;
 
             // Start for updates, go from there
