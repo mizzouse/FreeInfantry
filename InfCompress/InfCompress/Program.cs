@@ -75,25 +75,36 @@ namespace InfCompress
 
                 using (FileStream inFile = fi.OpenRead())
                 {
-                    using (FileStream outFile = File.Create(fi.FullName + ".gz"))
+                    switch (AssetFile.Compression)
                     {
-                        using (GZipStream Compress = new GZipStream(outFile, CompressionMode.Compress))
-                        {
-                            inFile.CopyTo(Compress);
+                        case ".gz":
+                            {
+                                using (FileStream outFile = File.Create(fi.FullName + AssetFile.Compression))
+                                {
+                                    using (GZipStream Compress = new GZipStream(outFile, CompressionMode.Compress))
+                                    {
+                                        inFile.CopyTo(Compress);
 
-                            FileInfo fout = new FileInfo(fi.FullName + ".gz");
-                            asset.DownloadSize = fout.Length;
+                                        FileInfo fout = new FileInfo(fi.FullName + AssetFile.Compression);
+                                        asset.DownloadSize = fout.Length;
+                                    }
+                                }
+                                break;
+                            }
 
-                        }
+
+                        default:
+                            Console.WriteLine("Improper compression technique set!");
+                            Console.ReadKey();
+                            Environment.Exit(1);
+                            break;
                     }
                 }
             }
 
             
             // 3. Generate manifest
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            XmlWriter writer = XmlWriter.Create("manifest.xml", settings);
+            XmlWriter writer = XmlTextWriter.Create("manifest.xml");
 
             writer.WriteStartDocument();
             writer.WriteStartElement("FIPatcher");
