@@ -27,6 +27,10 @@ namespace InfLauncher.Helpers
 
         public string InstallPath { get; private set; }
 
+        public string DirectoryAddress { get; private set; }
+
+        public string DirectoryAddressBackup { get; private set; }
+
         public bool Load()
         {
             using(XmlReader reader = XmlReader.Create(new FileStream(Filename, FileMode.Open)))
@@ -47,6 +51,13 @@ namespace InfLauncher.Helpers
                 reader.ReadToFollowing("install");
                 reader.MoveToFirstAttribute();
                 InstallPath = reader.Value;
+
+                // Directory Address
+                reader.ReadToFollowing("directory");
+                reader.MoveToFirstAttribute();
+                DirectoryAddress = reader.Value;
+                reader.MoveToNextAttribute();
+                DirectoryAddressBackup = reader.Value;
             }
 
             return true;
