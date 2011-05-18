@@ -45,9 +45,12 @@ namespace InfCompress
     {
         public static string ManifestFile = @"manifest.xml";
         public static string ProgramFile = System.Diagnostics.Process.GetCurrentProcess().MainModule.ModuleName;
+        public static Int64 uncompressed;
+        public static Int64 compressed;
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Compressing...");
             DirectoryInfo directory = new DirectoryInfo(Directory.GetCurrentDirectory());
             FileInfo[] files = directory.GetFiles();
 
@@ -60,6 +63,8 @@ namespace InfCompress
 
                 // Extract the first bit of data out of this.
                 var asset = new AssetFile();
+
+                uncompressed += file.Length;
 
                 asset.Name = file.Name;
                 asset.Size = file.Length;
@@ -87,6 +92,8 @@ namespace InfCompress
 
                                         FileInfo fout = new FileInfo(fi.FullName + AssetFile.Compression);
                                         asset.DownloadSize = fout.Length;
+
+                                        compressed += fout.Length;
                                     }
                                 }
                                 break;
@@ -106,6 +113,7 @@ namespace InfCompress
             settings.Encoding = new UTF8Encoding(false);
 
             // 3. Generate manifest
+            Console.WriteLine("Generating Manifest...");
             XmlWriter writer = XmlTextWriter.Create("manifest.xml", settings);
 
             writer.WriteStartDocument();
@@ -119,7 +127,7 @@ namespace InfCompress
 
             writer.Flush();
             writer.Close();
-
+            Console.WriteLine("{0} bytes compressed to {1} bytes", uncompressed, compressed);
             Console.WriteLine("Done, press any key to exit.");
             Console.Read();
         }
