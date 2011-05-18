@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
 using System.Xml;
 using InfLauncher.Models;
 
@@ -43,7 +44,7 @@ namespace InfLauncher.Protocol
         /// </summary>
         public class AssetDescriptor
         {
-            internal AssetDescriptor(string name, int crcValue, string compression, int downloadSize, string md5Hash, int fileSize)
+            internal AssetDescriptor(string name, int crcValue, string compression, long downloadSize, string md5Hash, long fileSize)
             {
                 Name = name;
                 CrcValue = crcValue;
@@ -59,11 +60,11 @@ namespace InfLauncher.Protocol
 
             public string Compression { get; private set; }
 
-            public int DownloadSize { get; private set; }
+            public long DownloadSize { get; private set; }
 
             public string Md5Hash { get; private set; }
 
-            public int FileSize { get; private set; }
+            public long FileSize { get; private set; }
         }
 
         #region Response Delegates
@@ -254,30 +255,39 @@ namespace InfLauncher.Protocol
             {
                 FileList = new List<AssetDescriptor>();
 
-                using(var reader = XmlReader.Create(new StringReader(fileData)))
+                fileData = fileData.Replace("\r\n", "\n");
+
+                try
                 {
-                    while(reader.ReadToFollowing("File"))
+                    using (var reader = XmlReader.Create(new StringReader(fileData)))
                     {
-                        reader.MoveToFirstAttribute();
-                        string name = reader.Value;
+                        while (reader.ReadToFollowing("File"))
+                        {
+                            reader.MoveToFirstAttribute();
+                            string name = reader.Value;
 
-                        reader.MoveToNextAttribute();
-                        int crc = int.Parse(reader.Value);
+                            reader.MoveToNextAttribute();
+                            int crc = int.Parse(reader.Value);
 
-                        reader.MoveToNextAttribute();
-                        string compression = reader.Value;
+                            reader.MoveToNextAttribute();
+                            string compression = reader.Value;
 
-                        reader.MoveToNextAttribute();
-                        int downloadSize = int.Parse(reader.Value);
+                            reader.MoveToNextAttribute();
+                            long downloadSize = long.Parse(reader.Value);
 
-                        reader.MoveToNextAttribute();
-                        string md5hash = reader.Value;
+                            reader.MoveToNextAttribute();
+                            string md5hash = reader.Value;
 
-                        reader.MoveToNextAttribute();
-                        int fileSize = int.Parse(reader.Value);
+                            reader.MoveToNextAttribute();
+                            long fileSize = long.Parse(reader.Value);
 
-                        FileList.Add(new AssetDescriptor(name, crc, compression, downloadSize, md5hash, fileSize));
+                            FileList.Add(new AssetDescriptor(name, crc, compression, downloadSize, md5hash, fileSize));
+                        }
                     }
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show(e.Message);
                 }
             }
         }

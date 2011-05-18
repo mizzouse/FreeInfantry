@@ -120,6 +120,7 @@ namespace InfLauncher.Controllers
         private void NewInstallation(List<AssetDownloader.AssetDescriptor> assetList)
         {
             Directory.CreateDirectory(GameDirectory);
+            WriteRegistryKeys();
 
             form.Show();
             form.SetCurrentTask("Installing Infantry Online, please wait.");
@@ -134,6 +135,15 @@ namespace InfLauncher.Controllers
             }
 
             downloadList = assetList;
+        }
+
+        private void WriteRegistryKeys()
+        {
+            Microsoft.Win32.RegistryKey key;
+
+            key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"Software\HarmlessGames\Infantry\Profile0\Options");
+            key.SetValue("SDirectoryAddress", Config.GetConfig().DirectoryAddress);
+            key.SetValue("SDirectoryAddressBackup", Config.GetConfig().DirectoryAddressBackup);
         }
 
         private void UpdateAssets(List<AssetDownloader.AssetDescriptor> assetList)
@@ -225,7 +235,7 @@ namespace InfLauncher.Controllers
             if(!Directory.Exists(GameDirectory))
             {
                 var result =
-                    MessageBox.Show("Game directory could not be found. Would you like to install Infantry Online?",
+                    MessageBox.Show("Game directory could not be found. Would you like to install Infantry Online now?",
                                     "Infantry Updater", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
