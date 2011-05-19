@@ -38,6 +38,7 @@ namespace InfLauncher.Controllers
         /// </summary>
         private MainForm mainForm;
 
+
         /// <summary>
         /// Creates a new MainController and displays the initial form.
         /// </summary>
@@ -48,6 +49,9 @@ namespace InfLauncher.Controllers
 
             _connection.OnRegisterAccountResponse += OnAccountRegistrationResponse;
             _connection.OnLoginAccountResponse += OnAccountLoginResponse;
+
+            //Temp: Testing News!
+            NewsController newsController = new NewsController("http://infdir1.aaerox.com/news/news.xml");
 
             // Configure connection with the asset server
             assetController = new AssetDownloadController(Config.GetConfig().AssetsUrl);
