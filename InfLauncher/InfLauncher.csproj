@@ -76,12 +76,6 @@
     <Compile Include="Views\NewAccountForm.Designer.cs">
       <DependentUpon>NewAccountForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\NewsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Views\NewsForm.Designer.cs">
-      <DependentUpon>NewsForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\UpdaterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,9 +97,6 @@
     <EmbeddedResource Include="Views\NewAccountForm.resx">
       <DependentUpon>NewAccountForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Views\NewsForm.resx">
-      <DependentUpon>NewsForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Views\UpdaterForm.resx">
       <DependentUpon>UpdaterForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -122,6 +113,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)InfLauncher\config.xml" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

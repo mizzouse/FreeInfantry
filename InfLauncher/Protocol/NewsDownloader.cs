@@ -13,20 +13,15 @@ namespace InfLauncher.Protocol
     public class NewsDownloader
     {
         /// <summary>
-        /// The persistent http downloading object.
+        /// The connecting object used to get the xml news file.
         /// </summary>
         private WebClient webClient;
 
         /// <summary>
-        /// 
+        /// Directory on the server where the news.xml file resides.
         /// </summary>
         private string baseDirectoryUrl;
 
-        /// <summary>
-        /// Creates a new NewsDownloader object given the location of the file list that references the news
-        /// to be downloaded.
-        /// </summary>
-        /// <param name="baseDirectoryUrl">XML file list</param>
         public NewsDownloader(string baseDirectoryUrl)
         {
             if (baseDirectoryUrl == null)
@@ -34,38 +29,10 @@ namespace InfLauncher.Protocol
                 throw new ArgumentNullException("baseDirectoryUrl");
             }
 
-            DownloadNewsFile(baseDirectoryUrl);
-
             this.baseDirectoryUrl = baseDirectoryUrl;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="totalPercentageComplete"></param>
-        public delegate void NewsFileProgressChanged(int totalPercentageComplete);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="assetList"></param>
-        public delegate void NewsFileDownloadCompleted(List<News> NewsList);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public NewsFileProgressChanged OnNewsFileDownloadProgressChanged;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public NewsFileDownloadCompleted OnNewsFileDownloadCompleted;
-
-        /// <summary>
-        /// Downloads the XML file that contains our news.
-        /// </summary>
-        /// <param name="newsFileName"></param>
-        public void DownloadNewsFile(string newsFileName)
+        public void DownloadNewsFileAsync(string newsFileName)
         {
             if (newsFileName == null)
             {
@@ -81,6 +48,19 @@ namespace InfLauncher.Protocol
             webClient.DownloadDataAsync(new Uri(newsFileName));
         }
 
+        #region Delegate Methods
+
+        public delegate void NewsFileProgressChanged(int totalPercentageComplete);
+
+        public delegate void NewsFileDownloadCompleted(List<News> newsList);
+
+        public NewsFileProgressChanged OnNewsFileDownloadProgressChanged;
+
+        public NewsFileDownloadCompleted OnNewsFileDownloadCompleted;
+
+        #endregion
+
+        #region WebClient Delegate Method Handlers
 
         private void NewsListProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
@@ -89,37 +69,26 @@ namespace InfLauncher.Protocol
 
         private void NewsListDownloadCompleted(object sender, DownloadDataCompletedEventArgs e)
         {
-            var parser = new XmlNewsFileParser(Encoding.UTF8.GetString(e.Result));
-            OnNewsFileDownloadCompleted(parser.NewsList);
-        }
+            var list = new List<News>();
+            var result = Encoding.UTF8.GetString(e.Result);
+            
+            // Parse the XML result into our News list.
+            var xmlDoc = XDocument.Parse(result);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private class XmlNewsFileParser
-        {
-            public List<News> NewsList { get; private set; }
-
-            public XmlNewsFileParser(string fileData)
+            foreach(var xmlPost in xmlDoc.Descendants("news"))
             {
-                NewsList = new List<News>();
+                var post = new News(xmlPost.Element("title").Value,
+                                    xmlPost.Element("url").Value,
+                                    xmlPost.Element("description").Value);
 
-                try
-                {
-                    XDocument doc = XDocument.Parse(fileData);
-                    foreach (XElement post in doc.Descendants("news"))
-                    {
-                        NewsList.Add(new News(post.Element("title").Value,
-                            post.Element("url").Value, 
-                            post.Element("description").Value
-                            ));
-                    }
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
+                list.Add(post);
             }
+
+            // TODO: Add error handling codes.
+
+            OnNewsFileDownloadCompleted(list);
         }
+
+        #endregion
     }
 }

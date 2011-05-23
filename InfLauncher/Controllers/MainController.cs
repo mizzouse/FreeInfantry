@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using InfLauncher.Helpers;
@@ -17,6 +18,11 @@ namespace InfLauncher.Controllers
         /// Controller that updates assets as needed.
         /// </summary>
         private AssetDownloadController assetController;
+
+        /// <summary>
+        /// Controller that handles downloading and displaying the latest news.
+        /// </summary>
+        private NewsController newsController;
 
         /// <summary>
         /// The connection associated with this controller.
@@ -50,9 +56,6 @@ namespace InfLauncher.Controllers
             _connection.OnRegisterAccountResponse += OnAccountRegistrationResponse;
             _connection.OnLoginAccountResponse += OnAccountLoginResponse;
 
-            //Temp: Testing News!
-            NewsController newsController = new NewsController("http://infdir1.aaerox.com/news/news.xml");
-
             // Configure connection with the asset server
             assetController = new AssetDownloadController(Config.GetConfig().AssetsUrl);
             assetController.OnUpdatingFinished += OnUpdatingFinished;
@@ -70,6 +73,27 @@ namespace InfLauncher.Controllers
             mainForm = new MainForm(this);
             mainForm.Closing += OnFormClosing;
             mainForm.Show();
+
+            // Get the news!
+            newsController = new NewsController("http://infdir1.aaerox.com/news/news.xml");
+
+            newsController.OnNewsControllerDownloadProgressChanged += OnNewsControllerDownloadProgressChanged;
+            newsController.OnNewsControllerDownloadCompleted += OnNewsControllerDownloadCompleted;
+        }
+
+        #endregion
+
+
+        #region News Delegate Handlers
+
+        private void OnNewsControllerDownloadProgressChanged(int totalPercentage)
+        {
+            // Not used.
+        }
+
+        private void OnNewsControllerDownloadCompleted(List<News> newsList)
+        {
+            mainForm.SetNews(newsList[0]);
         }
 
         #endregion
