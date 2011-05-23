@@ -73,5 +73,10 @@ namespace InfLauncher.Views
             LinkLabel label = (LinkLabel) sender;
             Process.Start((string) label.Tag);
         }
+
+        private void MainForm_Load(object sender, System.EventArgs e)
+        {
+
+        }
     }
 }
