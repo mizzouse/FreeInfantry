@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 using InfLauncher.Controllers;
+using InfLauncher.Helpers;
 using InfLauncher.Models;
 
 namespace InfLauncher.Views
@@ -27,6 +29,14 @@ namespace InfLauncher.Views
             btnPlay.Enabled = enabled;
         }
 
+        public void SetNews(News news)
+        {
+            lblNewsTitle.Text = news.Title;
+            lblNewsDescription.Text = news.Description;
+
+            lblNewsLink.Tag = news.URL;
+        }
+
         #region View Handlers
 
         private void btnLogin_Click(object sender, System.EventArgs e)
@@ -45,7 +55,7 @@ namespace InfLauncher.Views
         private void btnPlay_Click(object sender, System.EventArgs e)
         {
             var infantryProcess = new Process();
-            infantryProcess.StartInfo.FileName = "infantry.exe";
+            infantryProcess.StartInfo.FileName = Path.Combine(Config.GetConfig().InstallPath, "infantry.exe");
             infantryProcess.StartInfo.Arguments = string.Format("/ticket:{0} /name:{1}", _controller.GetSessionId(), "Jovan");
 
             infantryProcess.Start();
@@ -57,5 +67,11 @@ namespace InfLauncher.Views
         }
 
         #endregion
+
+        private void lblNewsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LinkLabel label = (LinkLabel) sender;
+            Process.Start((string) label.Tag);
+        }
     }
 }
