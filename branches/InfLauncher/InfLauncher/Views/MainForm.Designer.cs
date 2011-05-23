@@ -146,7 +146,7 @@
             this.splitContainer.Panel2.Controls.Add(this.txtboxPassword);
             this.splitContainer.Panel2.Controls.Add(this.lblPassword);
             this.splitContainer.Size = new System.Drawing.Size(452, 219);
-            this.splitContainer.SplitterDistance = 249;
+            this.splitContainer.SplitterDistance = 252;
             this.splitContainer.SplitterWidth = 1;
             this.splitContainer.TabIndex = 8;
             // 
@@ -163,10 +163,10 @@
             // 
             // lblNewsDescription
             // 
-            this.lblNewsDescription.AutoSize = true;
+            this.lblNewsDescription.AutoEllipsis = true;
             this.lblNewsDescription.Location = new System.Drawing.Point(3, 28);
             this.lblNewsDescription.Name = "lblNewsDescription";
-            this.lblNewsDescription.Size = new System.Drawing.Size(35, 13);
+            this.lblNewsDescription.Size = new System.Drawing.Size(246, 164);
             this.lblNewsDescription.TabIndex = 1;
             this.lblNewsDescription.Text = "label1";
             // 
@@ -193,6 +193,7 @@
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Infantry Online Launcher";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel1.PerformLayout();
             this.splitContainer.Panel2.ResumeLayout(false);
