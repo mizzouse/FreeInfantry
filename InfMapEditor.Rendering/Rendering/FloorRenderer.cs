@@ -95,6 +95,8 @@ namespace InfMapEditor.Rendering.Rendering
                 buffers[image].Value.AddVertex(v5);
             }
 
+            device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.Linear);
+
             // 2. Draw.
             ////
             foreach(var buffer in buffers.Values)
