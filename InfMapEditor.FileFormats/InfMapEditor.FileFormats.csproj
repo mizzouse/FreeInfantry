@@ -41,6 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infantry\BlobFile.cs" />
+    <Compile Include="Infantry\SpriteFile.cs" />
+    <Compile Include="Infantry\Sprite\CompressionFlags.cs" />
+    <Compile Include="Infantry\Sprite\Frame.cs" />
+    <Compile Include="Infantry\Sprite\FrameInfo.cs" />
+    <Compile Include="Infantry\Sprite\Header.cs" />
+    <Compile Include="Infantry\Sprite\OldHeader2.cs" />
+    <Compile Include="Infantry\Sprite\OldHeader3.cs" />
+    <Compile Include="Infantry\Sprite\OldHeader4.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

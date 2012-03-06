@@ -1,7 +1,4 @@
-﻿using System;
-using System.Drawing;
-using InfMapEditor.Rendering.Rendering;
-using SlimDX;
+﻿using SlimDX;
 using SlimDX.Direct3D9;
 
 namespace InfMapEditor.Rendering.Helpers
@@ -11,6 +8,12 @@ namespace InfMapEditor.Rendering.Helpers
         public Vector4 Position;
 
         public int Color;
+
+        public ColorVertex(Vector4 position, int color)
+        {
+            Position = position;
+            Color = color;
+        }
 
         int IVertex.SizeInBytes
         {

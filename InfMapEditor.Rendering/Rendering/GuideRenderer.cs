@@ -8,7 +8,7 @@ namespace InfMapEditor.Rendering.Rendering
 {
     internal class GuideRenderer
     {
-        internal static float RenderingZOffset = 0.8f;
+        internal static float RenderingZOffset = 0.6f;
 
         public int ColumnSpan
         {
@@ -24,7 +24,8 @@ namespace InfMapEditor.Rendering.Rendering
 
         public int Transparency
         {
-            get; set;
+            get { return transparency; }
+            set { transparency = value; ResetGrid(); }
         }
 
         public Color LineColor
@@ -46,15 +47,38 @@ namespace InfMapEditor.Rendering.Rendering
             this.color = color;
             this.columnSpan = colInterval;
             this.rowSpan = rowInterval;
-            this.Transparency = transparency;
+            this.transparency = transparency;
+
+            ResetGrid();
+        }
+
+        public void SetAttributes(int colInterval, int rowInterval, int transparency, Color c, Rectangle rect)
+        {
+            this.viewport = rect;
+            this.color = c;
+            this.columnSpan = colInterval;
+            this.rowSpan = rowInterval;
+            this.transparency = transparency;
 
             ResetGrid();
         }
 
         public void Render()
         {
+            // 1. Set the states -- we don't need textures, but we might need blending for the transparency.
+            ////
             device.SetTexture(0, null);
 
+            if(transparency > 0)
+            {
+                device.SetRenderState(RenderState.AlphaBlendEnable, true);
+                device.SetRenderState(RenderState.SourceBlend, Blend.SourceAlpha);
+                device.SetRenderState(RenderState.DestinationBlend, Blend.InverseSourceAlpha);
+                device.SetRenderState(RenderState.BlendOperation, BlendOperation.Add);
+            }
+
+            // 2. Do the work.
+            ////
             vertexBuffer.Render();
         }
 
@@ -80,16 +104,18 @@ namespace InfMapEditor.Rendering.Rendering
             var colVertices = new List<ColorVertex>(numOfColumns * 2);
             var rowVertices = new List<ColorVertex>(numOfRows * 2);
 
+            int opacity = 255 - Transparency;
+
             for(int i = iX; i < fX; i += columnSpan)
             {
                 var v0 = new ColorVertex();
                 var v1 = new ColorVertex();
 
-                v0.Position = new Vector4(i, 0, 0.5f, 1.0f);
-                v0.Color = color.ToArgb();
+                v0.Position = new Vector4(i, 0, RenderingZOffset, 1.0f);
+                v0.Color = Color.FromArgb(opacity, color).ToArgb();
 
-                v1.Position = new Vector4(i, viewport.Height, 0.5f, 1.0f);
-                v1.Color = color.ToArgb();
+                v1.Position = new Vector4(i, viewport.Height, RenderingZOffset, 1.0f);
+                v1.Color = Color.FromArgb(opacity, color).ToArgb();
 
                 colVertices.Add(v0);
                 colVertices.Add(v1);
@@ -100,11 +126,11 @@ namespace InfMapEditor.Rendering.Rendering
                 var v0 = new ColorVertex();
                 var v1 = new ColorVertex();
 
-                v0.Position = new Vector4(0, i, 0.5f, 1.0f);
-                v0.Color = color.ToArgb();
+                v0.Position = new Vector4(0, i, RenderingZOffset, 1.0f);
+                v0.Color = Color.FromArgb(opacity, color).ToArgb();
 
-                v1.Position = new Vector4(viewport.Width, i, 0.5f, 1.0f);
-                v1.Color = color.ToArgb();
+                v1.Position = new Vector4(viewport.Width, i, RenderingZOffset, 1.0f);
+                v1.Color = Color.FromArgb(opacity, color).ToArgb();
 
                 rowVertices.Add(v0);
                 rowVertices.Add(v1);
@@ -117,6 +143,7 @@ namespace InfMapEditor.Rendering.Rendering
         private int columnSpan;
         private int rowSpan;
         private Color color;
+        private int transparency;
         private Rectangle viewport;
         private readonly Device device;
         private ExpandableVertexBuffer<ColorVertex> vertexBuffer;

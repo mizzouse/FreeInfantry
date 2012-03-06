@@ -35,6 +35,11 @@
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.editMenuItemShowGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.layersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.floorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.objectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.physicsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.visionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemObjects = new System.Windows.Forms.ToolStripMenuItem();
             this.doorsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.flagsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,11 +57,16 @@
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.minimap = new InfMapEditor.Views.Main.Partials.MinimapControl();
             this.mapControl = new InfMapEditor.Views.Main.Partials.MapControl();
-            this.layersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.floorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.objectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.physicsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.visionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFileItemImport = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFileImportItemLevel = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFileImportItemMap = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.statusBar.SuspendLayout();
             this.menuBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
@@ -98,6 +108,15 @@
             // 
             // menuItemFile
             // 
+            this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem,
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.menuFileItemImport,
+            this.toolStripSeparator1,
+            this.exitToolStripMenuItem});
             this.menuItemFile.Name = "menuItemFile";
             this.menuItemFile.Size = new System.Drawing.Size(37, 20);
             this.menuItemFile.Text = "File";
@@ -113,9 +132,56 @@
             // editMenuItemShowGrid
             // 
             this.editMenuItemShowGrid.Name = "editMenuItemShowGrid";
-            this.editMenuItemShowGrid.Size = new System.Drawing.Size(105, 22);
+            this.editMenuItemShowGrid.Size = new System.Drawing.Size(152, 22);
             this.editMenuItemShowGrid.Text = "Grid...";
             this.editMenuItemShowGrid.Click += new System.EventHandler(this.editMenuItemShowGrid_Click);
+            // 
+            // layersToolStripMenuItem
+            // 
+            this.layersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.floorToolStripMenuItem,
+            this.objectsToolStripMenuItem,
+            this.physicsToolStripMenuItem,
+            this.visionToolStripMenuItem});
+            this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
+            this.layersToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.layersToolStripMenuItem.Text = "Layers";
+            // 
+            // floorToolStripMenuItem
+            // 
+            this.floorToolStripMenuItem.Checked = true;
+            this.floorToolStripMenuItem.CheckOnClick = true;
+            this.floorToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.floorToolStripMenuItem.Name = "floorToolStripMenuItem";
+            this.floorToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.floorToolStripMenuItem.Text = "Floors";
+            // 
+            // objectsToolStripMenuItem
+            // 
+            this.objectsToolStripMenuItem.Checked = true;
+            this.objectsToolStripMenuItem.CheckOnClick = true;
+            this.objectsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.objectsToolStripMenuItem.Name = "objectsToolStripMenuItem";
+            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.objectsToolStripMenuItem.Text = "Objects";
+            // 
+            // physicsToolStripMenuItem
+            // 
+            this.physicsToolStripMenuItem.Checked = true;
+            this.physicsToolStripMenuItem.CheckOnClick = true;
+            this.physicsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.physicsToolStripMenuItem.Name = "physicsToolStripMenuItem";
+            this.physicsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.physicsToolStripMenuItem.Text = "Physics";
+            // 
+            // visionToolStripMenuItem
+            // 
+            this.visionToolStripMenuItem.Checked = true;
+            this.visionToolStripMenuItem.CheckOnClick = true;
+            this.visionToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.visionToolStripMenuItem.Name = "visionToolStripMenuItem";
+            this.visionToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.visionToolStripMenuItem.Text = "Vision";
             // 
             // menuItemObjects
             // 
@@ -259,52 +325,67 @@
             this.mapControl.Size = new System.Drawing.Size(698, 553);
             this.mapControl.TabIndex = 0;
             // 
-            // layersToolStripMenuItem
+            // menuFileItemImport
             // 
-            this.layersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.floorToolStripMenuItem,
-            this.objectsToolStripMenuItem,
-            this.physicsToolStripMenuItem,
-            this.visionToolStripMenuItem});
-            this.layersToolStripMenuItem.Name = "layersToolStripMenuItem";
-            this.layersToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.layersToolStripMenuItem.Text = "Layers";
+            this.menuFileItemImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuFileImportItemLevel,
+            this.menuFileImportItemMap});
+            this.menuFileItemImport.Name = "menuFileItemImport";
+            this.menuFileItemImport.Size = new System.Drawing.Size(152, 22);
+            this.menuFileItemImport.Text = "Import";
             // 
-            // floorToolStripMenuItem
+            // menuFileImportItemLevel
             // 
-            this.floorToolStripMenuItem.Checked = true;
-            this.floorToolStripMenuItem.CheckOnClick = true;
-            this.floorToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.floorToolStripMenuItem.Name = "floorToolStripMenuItem";
-            this.floorToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.floorToolStripMenuItem.Text = "Floors";
+            this.menuFileImportItemLevel.Name = "menuFileImportItemLevel";
+            this.menuFileImportItemLevel.Size = new System.Drawing.Size(152, 22);
+            this.menuFileImportItemLevel.Text = "Level (*.lvl)";
+            this.menuFileImportItemLevel.Click += new System.EventHandler(this.menuFileImportItemLevel_Click);
             // 
-            // objectsToolStripMenuItem
+            // menuFileImportItemMap
             // 
-            this.objectsToolStripMenuItem.Checked = true;
-            this.objectsToolStripMenuItem.CheckOnClick = true;
-            this.objectsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.objectsToolStripMenuItem.Name = "objectsToolStripMenuItem";
-            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.objectsToolStripMenuItem.Text = "Objects";
+            this.menuFileImportItemMap.Name = "menuFileImportItemMap";
+            this.menuFileImportItemMap.Size = new System.Drawing.Size(152, 22);
+            this.menuFileImportItemMap.Text = "Map (*.map)";
             // 
-            // physicsToolStripMenuItem
+            // openToolStripMenuItem
             // 
-            this.physicsToolStripMenuItem.Checked = true;
-            this.physicsToolStripMenuItem.CheckOnClick = true;
-            this.physicsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.physicsToolStripMenuItem.Name = "physicsToolStripMenuItem";
-            this.physicsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.physicsToolStripMenuItem.Text = "Physics";
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Text = "Open";
             // 
-            // visionToolStripMenuItem
+            // toolStripSeparator1
             // 
-            this.visionToolStripMenuItem.Checked = true;
-            this.visionToolStripMenuItem.CheckOnClick = true;
-            this.visionToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.visionToolStripMenuItem.Name = "visionToolStripMenuItem";
-            this.visionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.visionToolStripMenuItem.Text = "Vision";
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newToolStripMenuItem.Text = "New";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
             // MainForm
             // 
@@ -362,6 +443,16 @@
         private System.Windows.Forms.ToolStripMenuItem objectsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem physicsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem visionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuFileItemImport;
+        private System.Windows.Forms.ToolStripMenuItem menuFileImportItemLevel;
+        private System.Windows.Forms.ToolStripMenuItem menuFileImportItemMap;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 

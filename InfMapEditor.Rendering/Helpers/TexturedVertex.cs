@@ -17,7 +17,11 @@ namespace InfMapEditor.Rendering.Helpers
 
         public int SizeInBytes { get { return 24; } }
 
+        public static int Size { get { return 24; } }
+
         public VertexElement[] VertexElements { get { return Elements;  } }
+
+        public static VertexElement[] VElements { get { return Elements; } }
 
         private static readonly VertexElement[] Elements = new[]
                                                                {
