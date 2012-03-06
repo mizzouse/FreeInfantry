@@ -57,6 +57,7 @@ namespace InfMapEditor.Controllers
             map.MouseMove += Map_OnMouseMove;
             map.MouseDown += Map_OnMouseDown;
             map.MouseUp += Map_OnMouseUp;
+            map.ScrollChanged += Map_OnScrollChanged;
         }
 
         #region MapControl Event Handling
@@ -75,23 +76,31 @@ namespace InfMapEditor.Controllers
 
         private void Map_OnMouseMove(object sender, MouseEventArgs e)
         {
-
+            if(selectionStarted)
+            {
+                renderer.UpdateSelection(new Point(e.X, e.Y));
+                map.Cursor = Cursors.Cross;
+            }
         }
 
         private void Map_OnMouseDown(object sender, MouseEventArgs e)
         {
-            BlobImage img = selectedTile();
-
-            if (img == null)
-                return;
-
-            CellData.FloorData floor = new CellData.FloorData();
-            floor.Image = img;
-
-            for (int i = 0; i < e.X; i++)
+            if (e.Button == MouseButtons.Left)
             {
-                for (int j = 0; j < e.Y; j++)
-                    renderer.SetFloorAt(floor, i, j);
+                selectionStarted = true;
+                renderer.StartSelection(new Point(e.X, e.Y));
+            }
+            else
+            {
+                BlobImage img = selectedTile();
+
+                if (img == null)
+                    return;
+
+                CellData.FloorData floor = new CellData.FloorData();
+                floor.Image = img;
+
+                renderer.SetFloorAt(floor, e.X, e.Y);
             }
 
             if(MouseDown != null)
@@ -102,10 +111,22 @@ namespace InfMapEditor.Controllers
 
         private void Map_OnMouseUp(object sender, MouseEventArgs e)
         {
+            if(e.Button == MouseButtons.Left)
+            {
+                selectionStarted = false;
+                map.Cursor = Cursors.Default;
+            }
+
             if(MouseUp != null)
             {
                 MouseUp(e);
             }
+        }
+
+        private void Map_OnScrollChanged(int x, int y)
+        {
+            renderer.Offset = new Size(x, y);
+            renderer.Render();
         }
 
         #endregion
@@ -113,5 +134,6 @@ namespace InfMapEditor.Controllers
         private MapControl map;
         private Renderer renderer;
         private SelectedTileDelegate selectedTile;
+        private bool selectionStarted;
     }
 }

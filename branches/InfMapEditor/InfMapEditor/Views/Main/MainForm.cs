@@ -66,5 +66,10 @@ namespace InfMapEditor.Views.Main
         }
 
         private FloorImagesDelegate floorImagesDelegate;
+
+        private void menuFileImportItemLevel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
