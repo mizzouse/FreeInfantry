@@ -51,7 +51,7 @@
             // 
             this.txtboxUsername.Location = new System.Drawing.Point(6, 21);
             this.txtboxUsername.Name = "txtboxUsername";
-            this.txtboxUsername.Size = new System.Drawing.Size(194, 20);
+            this.txtboxUsername.Size = new System.Drawing.Size(184, 20);
             this.txtboxUsername.TabIndex = 0;
             // 
             // txtboxPassword
@@ -59,7 +59,7 @@
             this.txtboxPassword.Location = new System.Drawing.Point(6, 60);
             this.txtboxPassword.Name = "txtboxPassword";
             this.txtboxPassword.PasswordChar = '*';
-            this.txtboxPassword.Size = new System.Drawing.Size(194, 20);
+            this.txtboxPassword.Size = new System.Drawing.Size(184, 20);
             this.txtboxPassword.TabIndex = 1;
             // 
             // lblUsername
@@ -92,7 +92,7 @@
             // 
             // btnNewAccount
             // 
-            this.btnNewAccount.Location = new System.Drawing.Point(112, 86);
+            this.btnNewAccount.Location = new System.Drawing.Point(102, 86);
             this.btnNewAccount.Name = "btnNewAccount";
             this.btnNewAccount.Size = new System.Drawing.Size(88, 23);
             this.btnNewAccount.TabIndex = 5;
@@ -103,7 +103,7 @@
             // linkWebsite
             // 
             this.linkWebsite.AutoSize = true;
-            this.linkWebsite.Location = new System.Drawing.Point(154, 201);
+            this.linkWebsite.Location = new System.Drawing.Point(144, 201);
             this.linkWebsite.Name = "linkWebsite";
             this.linkWebsite.Size = new System.Drawing.Size(46, 13);
             this.linkWebsite.TabIndex = 6;
@@ -146,7 +146,7 @@
             this.splitContainer.Panel2.Controls.Add(this.txtboxPassword);
             this.splitContainer.Panel2.Controls.Add(this.lblPassword);
             this.splitContainer.Size = new System.Drawing.Size(452, 219);
-            this.splitContainer.SplitterDistance = 252;
+            this.splitContainer.SplitterDistance = 258;
             this.splitContainer.SplitterWidth = 1;
             this.splitContainer.TabIndex = 8;
             // 
@@ -184,7 +184,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(476, 243);
+            this.ClientSize = new System.Drawing.Size(474, 240);
             this.Controls.Add(this.splitContainer);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

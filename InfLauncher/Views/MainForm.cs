@@ -56,14 +56,14 @@ namespace InfLauncher.Views
         {
             var infantryProcess = new Process();
             infantryProcess.StartInfo.FileName = Path.Combine(Config.GetConfig().InstallPath, "infantry.exe");
-            infantryProcess.StartInfo.Arguments = string.Format("/ticket:{0} /name:{1}", _controller.GetSessionId(), "Jovan");
-
+            infantryProcess.StartInfo.Arguments = string.Format("/ticket:{0} /name:{1}", _controller.GetSessionId(), _controller._account);
             infantryProcess.Start();
+            Application.Exit();
         }
 
         private void linkWebsite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://www.aaerox.com");
+            Process.Start("http://www.freeinfantry.org");
         }
 
         #endregion
