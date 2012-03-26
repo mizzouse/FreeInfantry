@@ -21,7 +21,7 @@ namespace InfLauncher.Controllers
             newsDownloader.OnNewsFileDownloadProgressChanged += OnNewsFileDownloadProgressChanged;
             newsDownloader.OnNewsFileDownloadCompleted += OnNewsFileDownloadCompleted;
 
-            newsDownloader.DownloadNewsFileAsync("http://infdir1.aaerox.com/news/news.xml");
+            newsDownloader.DownloadNewsFileAsync("http://freeinfantry.org/news/news.xml");
         }
 
         private void OnNewsFileDownloadProgressChanged(int totalPercentage)

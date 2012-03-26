@@ -35,6 +35,11 @@ namespace InfLauncher.Controllers
         private string _sessionId;
 
         /// <summary>
+        /// The string name of our account
+        /// </summary>
+        public string _account;
+
+        /// <summary>
         /// 
         /// </summary>
         private NewAccountForm newAccountForm;
