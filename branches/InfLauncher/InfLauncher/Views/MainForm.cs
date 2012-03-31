@@ -24,6 +24,11 @@ namespace InfLauncher.Views
             _controller = controller;
         }
 
+        public void SetLoginButtonState(bool enabled)
+        {
+            btnLogin.Enabled = enabled;
+        }
+
         public void SetPlayButtonState(bool enabled)
         {
             btnPlay.Enabled = enabled;
@@ -43,6 +48,18 @@ namespace InfLauncher.Views
         {
             var username = txtboxUsername.Text;
             var password = txtboxPassword.Text;
+
+            if(!Account.IsValidUsername(username))
+            {
+                MessageBox.Show(@"Username must be longer than 4 characters. Please register if you haven't yet!");
+                return;
+            }
+
+            if(!Account.IsValidPassword(password))
+            {
+                MessageBox.Show(@"Password can't be left empty.");
+                return;
+            }
 
             _controller.LoginAccount(new Account.AccountLoginRequestModel(username, password));
         }

@@ -26,6 +26,16 @@ namespace InfLauncher.Models
             return email.Contains("@");
         }
 
+        /// <summary>
+        /// Returns true if the password is not left blank.
+        /// </summary>
+        /// <param name="password">The password to verify</param>
+        /// <returns>true if valid</returns>
+        public static bool IsValidPassword(string password)
+        {
+            return !String.IsNullOrWhiteSpace(password);
+        }
+
         #endregion
 
 

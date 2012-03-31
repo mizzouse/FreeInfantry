@@ -370,13 +370,14 @@ namespace InfLauncher.Protocol
         /// </summary>
         /// <param name="str">The input string</param>
         /// <returns>SHA1 hashed output string</returns>
-        private string CalculateHashFor(string str)
+        private static string CalculateHashFor(string str)
         {
-            MD5 md5 = MD5.Create();
-            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(str);
-            byte[] hashBytes = md5.ComputeHash(inputBytes);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hashBytes.Length; i++)
+            var md5 = MD5.Create();
+            var inputBytes = Encoding.ASCII.GetBytes(str);
+            var hashBytes = md5.ComputeHash(inputBytes);
+            var sb = new StringBuilder();
+
+            for (var i = 0; i < hashBytes.Length; i++)
                 sb.Append(hashBytes[i].ToString("x2"));
 
             return sb.ToString();
