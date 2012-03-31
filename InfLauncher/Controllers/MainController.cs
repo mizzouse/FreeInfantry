@@ -211,6 +211,7 @@ namespace InfLauncher.Controllers
             {
                 case LoginStatusCode.Ok:
                     _sessionId = response.Model.TicketId.ToString();
+                    mainForm.SetLoginButtonState(false);
                     mainForm.SetPlayButtonState(true);
                     break;
 

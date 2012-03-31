@@ -33,6 +33,24 @@ namespace InfLauncher.Views
             var password = txtboxPassword.Text;
             var email = txtboxEmail.Text;
 
+            if(!Account.IsValidUsername(username))
+            {
+                MessageBox.Show(@"Username must be longer than 4 characters.");
+                return;
+            }
+
+            if(!Account.IsValidPassword(password))
+            {
+                MessageBox.Show(@"Password cannot be left blank.");
+                return;
+            }
+
+            if(!Account.IsValidEmail(email))
+            {
+                MessageBox.Show(@"Invalid email format.");
+                return;
+            }
+
             _controller.RegisterAccount(new Account.AccountRegistrationRequestModel(username, password, email));
         }
     }
