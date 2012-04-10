@@ -13,6 +13,10 @@ namespace InfLauncher.Views
         public UpdaterForm()
         {
             InitializeComponent();
+
+            lblTask.Text = "";
+            lblFileCount.Text = "";
+            lblCurrentFilename.Text = "";
         }
 
         /// <summary>

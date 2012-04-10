@@ -20,18 +20,8 @@ namespace InfLauncher.Views
         {
             InitializeComponent();
 
-            btnPlay.Enabled = false;
             _controller = controller;
-        }
-
-        public void SetLoginButtonState(bool enabled)
-        {
-            btnLogin.Enabled = enabled;
-        }
-
-        public void SetPlayButtonState(bool enabled)
-        {
-            btnPlay.Enabled = enabled;
+            loadSettings();
         }
 
         public void SetNews(News news)
@@ -40,6 +30,43 @@ namespace InfLauncher.Views
             lblNewsDescription.Text = news.Description;
 
             lblNewsLink.Tag = news.URL;
+        }
+
+        public void launchGame()
+        {
+            var infantryProcess = new Process();
+            infantryProcess.StartInfo.FileName = Path.Combine(Config.GetConfig().InstallPath, "infantry.exe");
+            infantryProcess.StartInfo.Arguments = string.Format("/ticket:{0} /name:{1}", _controller.GetSessionId(), _controller._account);
+            infantryProcess.Start();
+            Application.Exit();
+        }
+
+        public void loadSettings()
+        {
+            var username = Properties.Settings.Default.username;
+            var password = Properties.Settings.Default.password;
+
+            txtboxUsername.Select();
+            if (username.Length > 0)
+            {
+                txtboxUsername.Text = username;
+                if (password.Length > 0)
+                {
+                    txtboxPassword.Text = password;
+                    checkPass.Checked = true;
+                }
+                txtboxPassword.Select();
+            }
+            this.AcceptButton = btnLogin;
+        }
+
+        public void rememberSettings()
+        {
+            var settings = Properties.Settings.Default;
+
+            settings.username = txtboxUsername.Text;
+            settings.password = checkPass.Checked ? txtboxPassword.Text : "";
+            settings.Save();            
         }
 
         #region View Handlers
@@ -61,21 +88,14 @@ namespace InfLauncher.Views
                 return;
             }
 
+            rememberSettings();
+            _controller._account = username;
             _controller.LoginAccount(new Account.AccountLoginRequestModel(username, password));
         }
 
         private void btnNewAccount_Click(object sender, System.EventArgs e)
         {
             _controller.CreateNewAccountForm();
-        }
-
-        private void btnPlay_Click(object sender, System.EventArgs e)
-        {
-            var infantryProcess = new Process();
-            infantryProcess.StartInfo.FileName = Path.Combine(Config.GetConfig().InstallPath, "infantry.exe");
-            infantryProcess.StartInfo.Arguments = string.Format("/ticket:{0} /name:{1}", _controller.GetSessionId(), _controller._account);
-            infantryProcess.Start();
-            Application.Exit();
         }
 
         private void linkWebsite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -89,11 +109,6 @@ namespace InfLauncher.Views
         {
             LinkLabel label = (LinkLabel) sender;
             Process.Start((string) label.Tag);
-        }
-
-        private void MainForm_Load(object sender, System.EventArgs e)
-        {
-
         }
     }
 }
