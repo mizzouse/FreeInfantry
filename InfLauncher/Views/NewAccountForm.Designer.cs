@@ -109,7 +109,10 @@
             this.Controls.Add(this.txtboxPassword);
             this.Controls.Add(this.lblUsername);
             this.Controls.Add(this.txtboxUsername);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "NewAccountForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "New Account";

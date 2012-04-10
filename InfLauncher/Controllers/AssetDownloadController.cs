@@ -93,7 +93,7 @@ namespace InfLauncher.Controllers
         }
 
         /// <summary>
-        /// Proceeds to run the installation & updating procedure.
+        /// Proceeds to run the installation and updating procedure.
         /// </summary>
         /// <remarks>
         /// Once the installation and updating are done, the delegate 
@@ -120,7 +120,7 @@ namespace InfLauncher.Controllers
         private void NewInstallation(List<AssetDownloader.AssetDescriptor> assetList)
         {
             Directory.CreateDirectory(GameDirectory);
-            WriteRegistryKeys();
+            //WriteRegistryKeys();
 
             form.Show();
             form.SetCurrentTask("Installing Infantry Online, please wait.");
@@ -141,9 +141,12 @@ namespace InfLauncher.Controllers
         {
             Microsoft.Win32.RegistryKey key;
 
-            key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"Software\HarmlessGames\Infantry\Profile0\Options");
-            key.SetValue("SDirectoryAddress", Config.GetConfig().DirectoryAddress);
-            key.SetValue("SDirectoryAddressBackup", Config.GetConfig().DirectoryAddressBackup);
+            for (int i = 0; i <= 5; i++)
+            {
+                key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(String.Format(@"Software\HarmlessGames\Infantry\Profile{0}\Options", i));
+                key.SetValue("SDirectoryAddress", Config.GetConfig().DirectoryAddress);
+                key.SetValue("SDirectoryAddressBackup", Config.GetConfig().DirectoryAddressBackup);
+            }
         }
 
         private void UpdateAssets(List<AssetDownloader.AssetDescriptor> assetList)
@@ -252,6 +255,8 @@ namespace InfLauncher.Controllers
             {
                 UpdateAssets(assetList);
             }
+            //Write the registry keys mang
+            WriteRegistryKeys();
         }
 
         /// <summary>

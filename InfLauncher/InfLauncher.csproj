@@ -40,7 +40,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -73,12 +73,16 @@
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\AssetDownloadController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
+    <Compile Include="Controls\ProgressBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Helpers\Config.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Asset.cs" />
     <Compile Include="Models\News.cs" />
     <Compile Include="Protocol\AssetDownloader.cs" />
     <Compile Include="Protocol\NewsDownloader.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Views\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,6 +123,7 @@
     <EmbeddedResource Include="Views\UpdaterForm.resx">
       <DependentUpon>UpdaterForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="InfLauncher.exe.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
