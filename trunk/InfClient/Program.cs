@@ -36,10 +36,10 @@ namespace InfClient
 
             //Create our client
             client = new InfClient();
-            
+
             //Connects to Cow Cloning Facility for now.
             IPEndPoint serverLoc = new IPEndPoint(IPAddress.Parse("64.34.162.172"), 9002);
-        
+
             //Initialize everything..
             if (!client.init())
             {
@@ -48,15 +48,9 @@ namespace InfClient
                 return;
             }
 
-            //Make the connection, returns true at all times atm. #lazy
-            if (!client.connect(serverLoc))
-            {
-                Log.write(TLog.Error, "Client connection failed, exiting..");
-                Thread.Sleep(10000);
-                return;
-            }
+            //Connect
+            client.connect(serverLoc);
 
-            //zzzzzzzzz
             while (true)
             {
                 Console.Read();
