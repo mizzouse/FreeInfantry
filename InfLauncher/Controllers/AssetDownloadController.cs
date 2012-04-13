@@ -176,7 +176,7 @@ namespace InfLauncher.Controllers
             {
                 string filePath = Path.Combine(GameDirectory, asset.Name);
 
-                if (!File.Exists(filePath) || GetMD5HashFromFile(filePath) != asset.Md5Hash)
+                if (!File.Exists(filePath) || (GetMD5HashFromFile(filePath) != asset.Md5Hash && GetMD5HashFromFile(filePath) != "skip"))
                 {
                     resultList.Add(asset);
                 }
@@ -311,17 +311,31 @@ namespace InfLauncher.Controllers
 
         private string GetMD5HashFromFile(string fileName)
         {
-            FileStream file = new FileStream(fileName, FileMode.Open);
-            MD5 md5 = new MD5CryptoServiceProvider();
-            byte[] retVal = md5.ComputeHash(file);
-            file.Close();
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < retVal.Length; i++)
+            try
             {
-                sb.Append(retVal[i].ToString("X2"));
+                FileStream file = new FileStream(fileName, FileMode.Open);
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] retVal = md5.ComputeHash(file);
+                file.Close();
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < retVal.Length; i++)
+                {
+                    sb.Append(retVal[i].ToString("X2"));
+                }
+                return sb.ToString();
+
             }
-            return sb.ToString();
+            catch (IOException) //File can't be accessed. Skip it and let Infantry.exe take care of it.
+            {
+                //MessageBox.Show(e.Message);
+                return "skip";
+            }
+            catch (Exception e) //Uh oh? Tell the user whats wrong and try to continue
+            {
+                MessageBox.Show(e.Message);
+                return "skip";
+            }
         }
     }
 }
