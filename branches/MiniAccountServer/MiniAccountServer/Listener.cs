@@ -16,11 +16,11 @@ namespace MiniAccountServer
         private HttpListener listener;
         private DatabaseClient client;
 
-        private string[] prefixes = {@"http://0.0.0.0:1437/Account/"};
-
         public Listener()
         {
+            Console.WriteLine("Creating database client...");
             client = new DatabaseClient();
+            Console.WriteLine("Creating http listener...");
             listener = new HttpListener();
 
             listener.Prefixes.Add("http://*:1010/");
@@ -171,7 +171,7 @@ namespace MiniAccountServer
 
 
                         // 3. Good to go!
-                        Account a = client.AccountLogin(loginModel.Username, loginModel.PasswordHash, request.RemoteEndPoint.Address.ToString());
+                        Account a = client.AccountLogin(loginModel.Username, loginModel.PasswordHash);
 
                         var loginResponseModel = new Account.LoginResponseModel();
                         loginResponseModel.Username = a.Username;
