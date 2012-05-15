@@ -10,7 +10,7 @@ namespace MiniAccountServer
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Listening...");
+            Console.WriteLine("Starting...");
             var listener = new Listener();
             listener.Start();
         }
