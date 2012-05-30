@@ -28,7 +28,7 @@ namespace MiniAccountServer.Database
 
         public DatabaseClient()
         {
-            _connString = "Server=97.81.198.67\\INFANTRY,6658;Database=Infantry;Uid=AccountServer;Pwd=cocks;";
+            _connString = "Server=FREEINFANTRY\\INFANTRY;Database=Data;Trusted_Connection=True;";
 
             _connection = new SqlConnection(_connString);
 
@@ -100,7 +100,7 @@ namespace MiniAccountServer.Database
             return true;
         }
 
-        public Account AccountLogin(string username, string password)
+        public Account AccountLogin(string username, string password, string IPAddress)
         {
             var cmd = new SqlCommand(_strAccountValid, _connection);
 
