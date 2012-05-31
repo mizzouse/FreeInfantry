@@ -24,6 +24,11 @@ namespace MiniAccountServer.Database
 
         private String _strAccountValid = "SELECT * FROM account WHERE name LIKE @name AND password LIKE @password";
 
+        private String _strLoginUpdate =
+            "UPDATE account SET ticket=@ticket WHERE name LIKE @name;" +
+            "UPDATE account SET lastAccess=@time WHERE name LIKE @name;" +
+            "UPDATE account SET IPAddress=@ipaddress WHERE name LIKE @name";
+
         #endregion
 
         public DatabaseClient()
@@ -102,6 +107,16 @@ namespace MiniAccountServer.Database
 
         public Account AccountLogin(string username, string password, string IPAddress)
         {
+            //Update some stuff first, mang
+            var update = new SqlCommand(_strLoginUpdate, _connection);
+
+            update.Parameters.AddWithValue("@name", username);
+            update.Parameters.AddWithValue("@ticket", Guid.NewGuid().ToString());
+            update.Parameters.AddWithValue("@time", DateTime.Now);
+            update.Parameters.AddWithValue("@ipaddress", IPAddress);
+
+            update.ExecuteNonQuery();
+            
             var cmd = new SqlCommand(_strAccountValid, _connection);
 
             cmd.Parameters.AddWithValue("@name", username);
