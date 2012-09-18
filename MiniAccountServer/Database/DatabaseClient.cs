@@ -33,7 +33,7 @@ namespace MiniAccountServer.Database
 
         public DatabaseClient()
         {
-            _connString = "Server=FREEINFANTRY\\INFANTRY;Database=Data;Trusted_Connection=True;";
+            _connString = "Server=Infantry\\INFANTRY;Database=Data;Trusted_Connection=True;";
 
             _connection = new SqlConnection(_connString);
 
