@@ -30,10 +30,10 @@ namespace MiniAccountServer.Database
             "UPDATE account SET IPAddress=@ipaddress WHERE name LIKE @name";
 
         #endregion
-
+        private String _strEmailExists = "SELECT * FROM account WHERE email LIKE @email";
         public DatabaseClient()
         {
-            _connString = "Server=Infantry\\INFANTRY;Database=Data;Trusted_Connection=True;";
+            _connString = "Server=INFANTRY\\SQLEXPRESS;Database=Data;Trusted_Connection=True;";
 
             _connection = new SqlConnection(_connString);
 
@@ -104,10 +104,23 @@ namespace MiniAccountServer.Database
 
             return true;
         }
+        public bool EmailExists(string email)
+        {
+            var cmd = new SqlCommand(_strEmailExists, _connection);
 
+            cmd.Parameters.AddWithValue("@email", email);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                if (!reader.HasRows)
+                    return false;
+            }
+            return true;
+        }
         public Account AccountLogin(string username, string password, string IPAddress)
         {
             //Update some stuff first, mang
+
             var update = new SqlCommand(_strLoginUpdate, _connection);
 
             update.Parameters.AddWithValue("@name", username);
