@@ -114,15 +114,26 @@ namespace MiniAccountServer
 
                             break;
                         }
-
-
-                        // 4. Add it to the database, and we're good to go!
+                        
+                          // 4. Is the email already used?
+			            if (client.EmailExists(regModel.Email))
+			            {
+			                response.StatusCode = 406;
+			                response.OutputStream.Close();
+					
+			                break;
+		        	    }
+						
+                
+                         
+                        
+                        // 5. Add it to the database, and we're good to go!
                         var account = client.AccountCreate(regModel.Username, regModel.PasswordHash,
                                                            Guid.NewGuid().ToString(),
                                                            DateTime.Now, DateTime.Now, 0, regModel.Email);
 
 
-                        // 5. Oh uh? Some error happened!
+                        // 6. Oh uh? Some error happened!
                         if (account == null)
                         {
                             response.StatusCode = 500;
