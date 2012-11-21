@@ -22,11 +22,7 @@ namespace MiniAccountServer.Models
         /// </summary>
         /// <param name="email">The email to verify</param>
         /// <returns>true if valid</returns>
-     /*   public static bool IsValidEmail(string email)
-        {
-            return email.Contains("@");
-        }*/
-            public static bool IsValidEmail(string email)
+        public static bool IsValidEmail(string email)
 		{
 			if (string.IsNullOrEmpty(email) )
 			return false;
