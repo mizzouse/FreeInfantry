@@ -25,12 +25,11 @@ namespace MiniAccountServer.Models
         public static bool IsValidEmail(string email)
 		{
 			if (string.IsNullOrEmpty(email) )
-			return false;
+			    return false;
 
-			Regex ematch = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*"+ "@"+ @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
-			return ematch.IsMatch(email) && !email.EndsWith(".");
+            Regex ematch = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" + "@" + @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
+            return ematch.IsMatch(email) && !email.EndsWith("."); 
 		}
-
         #endregion
 
 

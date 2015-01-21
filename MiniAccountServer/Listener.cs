@@ -13,40 +13,61 @@ namespace MiniAccountServer
 {
     public class Listener
     {
-        private HttpListener listener;
+        private HttpListener httpListener;
         private DatabaseClient client;
 
         private string[] prefixes = {@"http://0.0.0.0:1437/Account/"};
 
+        /// <summary>
+        /// Generic Constructor
+        /// </summary>
         public Listener()
         {
             client = new DatabaseClient();
-            listener = new HttpListener();
+            httpListener = new HttpListener();
 
-            listener.Prefixes.Add("http://*:1010/");
+            httpListener.Prefixes.Add("http://*:1010/");
         }
 
+        /// <summary>
+        /// Starts our program, exits if any errors occur
+        /// </summary>
         public void Start()
         {
+            //Is this OS supported?
             if (!HttpListener.IsSupported)
             {
-                Console.WriteLine("Not supported");
+                Console.WriteLine("HttpListener: Not supported on current system.");
+                System.Threading.Thread.Sleep(5000);
             }
             else
             {
-
                 try
                 {
-                    listener.Start();
-                    while (true)
+                    httpListener.Start();
+                    System.Threading.Thread.Sleep(1000);
+
+                    //Are we activated?
+                    if (!httpListener.IsListening)
                     {
-                        HttpListenerContext context = listener.GetContext();
+                        Console.WriteLine("Cannot start HttpListener... Exiting.");
+                        System.Threading.Thread.Sleep(5000);
+                        return;
+                    }
+
+                    Console.WriteLine("Listening....");
+                    while (httpListener.IsListening)
+                    {
+                        HttpListenerContext context = httpListener.GetContext();
                         HandleRequest(context);
                     }
                 }
                 catch (Exception e)
                 {
-                    listener.Close();
+                    httpListener.Close();
+
+                    Console.WriteLine(e.ToString());
+                    System.Threading.Thread.Sleep(5000);
                 }
             }
         }
@@ -57,10 +78,8 @@ namespace MiniAccountServer
             HttpListenerResponse response = context.Response;
 
             Console.WriteLine("Request {0}/{1} from {2}", request.RawUrl.ToString(), request.HttpMethod, request.RemoteEndPoint);
-
             try
             {
-
                 // Lets figure out the request...
                 switch (request.HttpMethod)
                 {
@@ -74,7 +93,6 @@ namespace MiniAccountServer
 
                     // Account registration request
                     case "PUT":
-
                         // 1. Is the request good?
                         if (!request.HasEntityBody)
                         {
@@ -86,7 +104,7 @@ namespace MiniAccountServer
 
                         string registrationData = new StreamReader(request.InputStream).ReadToEnd();
                         var regModel = JsonConvert.DeserializeObject<Account.RegistrationRequestModel>(registrationData);
-
+                        // 2. Data valid?
                         if (!regModel.IsRequestValid())
                         {
                             response.StatusCode = 400;
@@ -95,8 +113,7 @@ namespace MiniAccountServer
                             break;
                         }
 
-
-                        // 2. Is the username available?
+                        // 3. Is the username available?
                         if (client.UsernameExists(regModel.Username))
                         {
                             response.StatusCode = 403;
@@ -105,29 +122,27 @@ namespace MiniAccountServer
                             break;
                         }
 
-
-                        // 3. Are the credentials good?
+                        // 4. Are the credentials good?
                         if (!Account.IsValidUsername(regModel.Username) || !Account.IsValidEmail(regModel.Email))
                         {
                             response.StatusCode = 406;
+                            response.StatusDescription = (!Account.IsValidUsername(regModel.Username) ? "Invalid Username" : "Invalid Email");
                             response.OutputStream.Close();
 
                             break;
                         }
                         
-                          // 4. Is the email already used?
+                        // 5. Is the email already used?
 			            if (client.EmailExists(regModel.Email))
 			            {
-			                response.StatusCode = 406;
+			                response.StatusCode = 409;
+                            response.StatusDescription = "Email already exists.";
 			                response.OutputStream.Close();
 					
 			                break;
 		        	    }
 						
-                
-                         
-                        
-                        // 5. Add it to the database, and we're good to go!
+                        // Add it to the database, and we're good to go!
                         var account = client.AccountCreate(regModel.Username, regModel.PasswordHash,
                                                            Guid.NewGuid().ToString(),
                                                            DateTime.Now, DateTime.Now, 0, regModel.Email);
@@ -137,11 +152,11 @@ namespace MiniAccountServer
                         if (account == null)
                         {
                             response.StatusCode = 500;
+                            response.StatusDescription = "Account Creation Failed.";
                             response.OutputStream.Close();
 
                             break;
                         }
-
 
                         // Done!
                         response.StatusCode = 201;
@@ -161,7 +176,7 @@ namespace MiniAccountServer
 
                         string loginData = new StreamReader(request.InputStream).ReadToEnd();
                         var loginModel = JsonConvert.DeserializeObject<Account.LoginRequestModel>(loginData);
-
+                        // 2. Is the data valid?
                         if (!loginModel.IsRequestValid())
                         {
                             response.StatusCode = 400;
@@ -170,8 +185,7 @@ namespace MiniAccountServer
                             break;
                         }
 
-
-                        // 2. Are the credentials good?
+                        // 3. Are the credentials good?
                         if (!client.IsAccountValid(loginModel.Username, loginModel.PasswordHash))
                         {
                             response.StatusCode = 404;
@@ -180,9 +194,18 @@ namespace MiniAccountServer
                             break;
                         }
 
-
-                        // 3. Good to go!
+                        // Try logging in
                         Account a = client.AccountLogin(loginModel.Username, loginModel.PasswordHash, request.RemoteEndPoint.Address.ToString());
+
+                        // 4. Was it successful?
+                        if (a == null)
+                        {
+                            response.StatusCode = 400;
+                            response.StatusDescription = "Account doesn't exist.";
+                            response.OutputStream.Close();
+
+                            break;
+                        }
 
                         var loginResponseModel = new Account.LoginResponseModel();
                         loginResponseModel.Username = a.Username;
@@ -205,9 +228,7 @@ namespace MiniAccountServer
             catch (Exception e)
             {
                 if (e.Message.Contains("SQL"))
-                {
-                Console.WriteLine("Unhandled SQL exception");
-                }
+                    Console.WriteLine("Unhandled SQL exception");
             }
         }
     }
