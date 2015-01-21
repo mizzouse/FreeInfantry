@@ -117,10 +117,10 @@ namespace MiniAccountServer.Database
             }
             return true;
         }
+
         public Account AccountLogin(string username, string password, string IPAddress)
         {
             //Update some stuff first, mang
-
             var update = new SqlCommand(_strLoginUpdate, _connection);
 
             update.Parameters.AddWithValue("@name", username);
