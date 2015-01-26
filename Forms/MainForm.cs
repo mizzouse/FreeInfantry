@@ -43,7 +43,9 @@ namespace InfantryLauncher.Forms
         private Button btnPlay;
         private LinkLabel lnkUpdate;
         private string accountServer;
+        private bool updateLauncher;
 
+        #region Main Form
         /// <summary>
         /// Generic Constructor
         /// </summary>
@@ -51,6 +53,7 @@ namespace InfantryLauncher.Forms
         {
             this.InitializeComponent();
             this.SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+            updateLauncher = false;
         }
 
         /// <summary>
@@ -91,35 +94,21 @@ namespace InfantryLauncher.Forms
         /// </summary>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.imgBackground = Image.FromFile(Path.Combine(Directory.GetCurrentDirectory(), "imgs/bg.png"), true);
-            this.imgBtnOff = Image.FromFile(Path.Combine(Directory.GetCurrentDirectory(), "imgs/btnoff.png"), true);
-            this.imgBtnOn = Image.FromFile(Path.Combine(Directory.GetCurrentDirectory(), "imgs/btnon.png"), true);
-            this.BackgroundImage = this.imgBackground;
-            this.btnPlay.BackgroundImage = this.imgBtnOff;
-            this.btnRegister.BackgroundImage = this.imgBtnOff;
+            string imgs = (Path.Combine(Directory.GetCurrentDirectory(), "imgs"));
+            if (Directory.Exists(imgs))
+            {
+                this.imgBackground = Image.FromFile(Path.Combine(imgs, "bg.png"), true);
+                this.imgBtnOff = Image.FromFile(Path.Combine(imgs, "btnoff.png"), true);
+                this.imgBtnOn = Image.FromFile(Path.Combine(imgs, "btnon.png"), true);
+                this.BackgroundImage = this.imgBackground;
+                this.btnPlay.BackgroundImage = this.imgBtnOff;
+                this.btnRegister.BackgroundImage = this.imgBtnOff;
+            }
             this.lblStatus.Text = string.Empty;
             this.AcceptButton = (IButtonControl)this.btnPlay;
             this.LoadSettings();
             this.CheckUpdates();
-            this.AssetDownloadController(this.settings["Launcher"]["Assets"]);
             this.RunAsync();
-        }
-
-        /// <summary>
-        /// Checks to see if our launcher needs to be updated
-        /// </summary>
-        private void CheckUpdates()
-        {
-            try
-            {
-                string str = new WebClient().DownloadString(this.settings["Launcher"]["VersionUrl"]);
-                if (!(str != this.settings["Launcher"]["Version"]))
-                    return;
-                this.lnkUpdate.Visible = true;
-            }
-            catch (Exception)
-            {
-            }
         }
 
         /// <summary>
@@ -140,43 +129,64 @@ namespace InfantryLauncher.Forms
         }
 
         /// <summary>
-        /// Saves our credentials and needed info
+        /// Checks to see if our launcher needs to be updated
         /// </summary>
-        private void SaveSettings()
+        private void CheckUpdates()
         {
-            this.settings["Credentials"]["Username"] = this.txtUsername.Text;
-            if (this.txtPassword.Text == "*****")
-                this.settings["Credentials"]["Password"] = this.settings["Credentials"]["Password"];
-            else
-                this.settings["Credentials"]["Password"] = this.chkRemember.Checked ? Md5.Hash(this.txtPassword.Text) : string.Empty;
-            this.settings.Save();
+            try
+            {
+                this.SetCurrentTask("Checking for launcher updates...");
+                string str = new WebClient().DownloadString(this.settings["Launcher"]["VersionUrl"]);
+                if (!(str != this.settings["Launcher"]["Version"]))
+                    return;
+
+                this.lnkUpdate.Visible = true;
+
+                //Lets update
+                this.updateLauncher = true;
+                this.SetCurrentTask("Downloading...");
+                this.AssetDownloadController(this.settings["Launcher"]["Assets"]);
+                this.assetDownloader.DownloadAssetFileList(this.settings["Launcher"]["LauncherAssetsList"]);
+            }
+            catch (Exception)
+            {
+            }
         }
 
-        public void OnUpdatingFinished()
+        /// <summary>
+        /// Initiates our infantry asset list downloading
+        /// </summary>
+        public void RunAsync()
         {
-            this.btnPlay.Enabled = true;
-            this.lblStatus.Text = "Updating complete...";
+            this.updateLauncher = false;
+            this.SetCurrentTask("Updating assets...");
+            this.AssetDownloadController(this.settings["Launcher"]["Assets"]);
+            this.assetDownloader.DownloadAssetFileList(this.settings["Launcher"]["AssetsList"]);
         }
 
-        private void SetFileCounts(int p, int numTotalDownloads)
+        private void lnkWebsite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            this.curFileCounts = string.Format("{0}/{1}", (object)p.ToString(), (object)numTotalDownloads.ToString());
-            this.lblStatus.Text = string.Format("{0}  |  {1}", (object)this.curFileCounts, (object)this.curFileName);
+            Process.Start(this.settings["Launcher"]["Website"]);
         }
 
-        private void SetCurrentTask(string p)
+        private void lnkUpdate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            Process.Start(this.settings["Launcher"]["Website"]);
         }
 
-        private void SetFilename(string p)
+        private void btnImages_MouseEnter(object sender, EventArgs e)
         {
-            this.curFileName = p;
-            this.lblStatus.Text = string.Format("{0}  |  {1}", (object)this.curFileCounts, (object)this.curFileName);
+            ((ButtonBase)sender).Image = this.imgBtnOn;
         }
 
-        private void SetProgress(int totalPercentage)
+        private void btnImages_MouseLeave(object sender, EventArgs e)
         {
-            this.progressBar.Value = totalPercentage;
+            ((ButtonBase)sender).Image = this.imgBtnOff;
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.SaveSettings();
         }
 
         private void btnRegister_Click(object sender, EventArgs e)
@@ -237,191 +247,17 @@ namespace InfantryLauncher.Forms
             Application.Exit();
         }
 
-        private void lnkWebsite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        /// <summary>
+        /// Saves our credentials and needed info
+        /// </summary>
+        private void SaveSettings()
         {
-            Process.Start(this.settings["Launcher"]["Website"]);
-        }
-
-        private void lnkUpdate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start(this.settings["Launcher"]["Website"]);
-        }
-
-        private void btnImages_MouseEnter(object sender, EventArgs e)
-        {
-            ((ButtonBase)sender).Image = this.imgBtnOn;
-        }
-
-        private void btnImages_MouseLeave(object sender, EventArgs e)
-        {
-            ((ButtonBase)sender).Image = this.imgBtnOff;
-        }
-
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            this.SaveSettings();
-        }
-
-        public void AssetDownloadController(string baseUrlDirectory)
-        {
-            if (baseUrlDirectory == null)
-                throw new ArgumentNullException("baseUrlDirectory");
-            this.downloadList = new List<AssetDownloader.AssetDescriptor>();
-            this.numFilesDownloaded = 0;
-            this.numTotalDownloads = 0;
-            this.assetDownloader = new AssetDownloader(baseUrlDirectory);
-            this.assetDownloader.OnAssetFileListDownloadProgressChanged += new AssetDownloader.AssetFileListDownloadProgressChanged(this.OnAssetFileListDownloadProgressChanged);
-            this.assetDownloader.OnAssetFileListDownloadCompleted += new AssetDownloader.AssetFileListDownloadCompleted(this.OnAssetFileListDownloadCompleted);
-            this.assetDownloader.OnAssetDownloadBegin += new AssetDownloader.AssetDownloadBegin(this.OnAssetDownloadBegin);
-            this.assetDownloader.OnAssetDownloadProgressChanged += new AssetDownloader.AssetDownloadProgressChanged(this.OnAssetDownloadProgressChanged);
-            this.assetDownloader.OnAssetDownloadCompleted += new AssetDownloader.AssetDownloadCompleted(this.OnAssetDownloadCompleted);
-        }
-
-        public void RunAsync()
-        {
-            this.assetDownloader.DownloadAssetFileList(this.settings["Launcher"]["AssetsList"]);
-        }
-
-        private void DownloadAsset(AssetDownloader.AssetDescriptor asset)
-        {
-            this.assetDownloader.DownloadAsset(asset);
-        }
-
-        private void WriteRegistryKeys()
-        {
-            for (int index = 0; index <= 5; ++index)
-            {
-                RegistryKey subKey = Registry.CurrentUser.CreateSubKey(string.Format("Software\\HarmlessGames\\Infantry\\Profile{0}\\Options", (object)index));
-                subKey.SetValue("SDirectoryAddress", (object)this.settings["Launcher"]["Directory1"]);
-                subKey.SetValue("SDirectoryAddressBackup", (object)this.settings["Launcher"]["Directory2"]);
-            }
-        }
-
-        private void UpdateAssets(List<AssetDownloader.AssetDescriptor> assetList)
-        {
-            BackgroundWorker backgroundWorker = new BackgroundWorker();
-            backgroundWorker.DoWork += new DoWorkEventHandler(this.Md5BackgroundWorker);
-            backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.Md5BackgroundWorkerCompleted);
-            backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(this.Md5BackgroundWorkerReportProgress);
-            backgroundWorker.WorkerReportsProgress = true;
-            this.numFilesDownloaded = 0;
-            this.numTotalDownloads = assetList.Count;
-            this.SetCurrentTask("Calculating checksum...");
-            backgroundWorker.RunWorkerAsync((object)assetList);
-        }
-
-        private void Md5BackgroundWorker(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker backgroundWorker = sender as BackgroundWorker;
-            List<AssetDownloader.AssetDescriptor> list1 = (List<AssetDownloader.AssetDescriptor>)e.Argument;
-            List<AssetDownloader.AssetDescriptor> list2 = new List<AssetDownloader.AssetDescriptor>();
-            foreach (AssetDownloader.AssetDescriptor assetDescriptor in list1)
-            {
-                string str = Path.Combine(this.GameDirectory, assetDescriptor.Name);
-                if (!System.IO.File.Exists(str) || this.GetMD5HashFromFile(str) != assetDescriptor.Md5Hash && this.GetMD5HashFromFile(str) != "skip")
-                    list2.Add(assetDescriptor);
-                backgroundWorker.ReportProgress(100);
-            }
-            e.Result = (object)list2;
-        }
-
-        private void Md5BackgroundWorkerReportProgress(object sender, ProgressChangedEventArgs e)
-        {
-            this.SetFileCounts(++this.numFilesDownloaded, this.numTotalDownloads);
-            this.SetProgress((int)Math.Ceiling((double)this.numFilesDownloaded / (double)this.numTotalDownloads * 100.0));
-        }
-
-        private void Md5BackgroundWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            List<AssetDownloader.AssetDescriptor> list = e.Result as List<AssetDownloader.AssetDescriptor>;
-            if (list.Count == 0)
-            {
-                this.OnUpdatingFinished();
-            }
+            this.settings["Credentials"]["Username"] = this.txtUsername.Text;
+            if (this.txtPassword.Text == "*****")
+                this.settings["Credentials"]["Password"] = this.settings["Credentials"]["Password"];
             else
-            {
-                this.SetCurrentTask("Updating Infantry Online...");
-                this.numFilesDownloaded = 0;
-                this.numTotalDownloads = list.Count;
-                this.SetFileCounts(0, this.numTotalDownloads);
-                foreach (AssetDownloader.AssetDescriptor asset in list)
-                    this.DownloadAsset(asset);
-            }
-        }
-
-        private string GetMD5HashFromFile(string fileName)
-        {
-            try
-            {
-                FileStream fileStream = new FileStream(fileName, FileMode.Open);
-                byte[] hash = new MD5CryptoServiceProvider().ComputeHash((Stream)fileStream);
-                fileStream.Close();
-                StringBuilder stringBuilder = new StringBuilder();
-                for (int index = 0; index < hash.Length; ++index)
-                    stringBuilder.Append(hash[index].ToString("X2"));
-                return ((object)stringBuilder).ToString();
-            }
-            catch (IOException)
-            {
-                return "skip";
-            }
-            catch (Exception ex)
-            {
-                int num = (int)MessageBox.Show(ex.Message);
-                return "skip";
-            }
-        }
-
-        private void OnAssetFileListDownloadProgressChanged(int totalPercentage)
-        {
-        }
-
-        private void OnAssetFileListDownloadCompleted(List<AssetDownloader.AssetDescriptor> assetList)
-        {
-            this.GameDirectory = Environment.CurrentDirectory;
+                this.settings["Credentials"]["Password"] = this.chkRemember.Checked ? Md5.Hash(this.txtPassword.Text) : string.Empty;
             this.settings.Save();
-            this.WriteRegistryKeys();
-            this.UpdateAssets(assetList);
-        }
-
-        private void OnAssetDownloadBegin(AssetDownloader.AssetDescriptor asset)
-        {
-            this.SetFilename(asset.Name);
-        }
-
-        private void OnAssetDownloadProgressChanged(int totalPercentage)
-        {
-            this.SetProgress(totalPercentage);
-        }
-
-        private void OnAssetDownloadCompleted(Asset asset)
-        {
-            using (FileStream fileStream = System.IO.File.Create(Path.Combine(this.GameDirectory, asset.FileName)))
-            {
-                using (MemoryStream memoryStream = new MemoryStream(asset.Data))
-                {
-                    using (GZipStream gzipStream = new GZipStream((Stream)memoryStream, CompressionMode.Decompress))
-                        gzipStream.CopyTo((Stream)fileStream);
-                }
-            }
-            this.downloadList.Remove(asset.Descriptor);
-            ++this.numFilesDownloaded;
-            this.SetFileCounts(this.numFilesDownloaded, this.numTotalDownloads);
-            if (this.numFilesDownloaded != this.numTotalDownloads)
-                return;
-            this.OnUpdatingFinished();
-        }
-
-        private AccountServer.PingRequestStatusCode PingServer(string url)
-        {
-            switch (AccountServer.PingAccount(url))
-            {
-                default:
-                case AccountServer.PingRequestStatusCode.NotFound:
-                    return AccountServer.PingRequestStatusCode.NotFound;
-                case AccountServer.PingRequestStatusCode.Ok:
-                    return AccountServer.PingRequestStatusCode.Ok;
-            }
         }
 
         protected override void Dispose(bool disposing)
@@ -602,5 +438,224 @@ namespace InfantryLauncher.Forms
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        #endregion
+
+        #region Asset Downloading and Updating
+        /// <summary>
+        /// Initiates our asset list downloading
+        /// </summary>
+        private void AssetDownloadController(string baseUrlDirectory)
+        {
+            if (baseUrlDirectory == null)
+                throw new ArgumentNullException("baseUrlDirectory");
+            this.downloadList = new List<AssetDownloader.AssetDescriptor>();
+            this.numFilesDownloaded = 0;
+            this.numTotalDownloads = 0;
+            this.assetDownloader = new AssetDownloader(baseUrlDirectory);
+            this.assetDownloader.OnAssetFileListDownloadProgressChanged += new AssetDownloader.AssetFileListDownloadProgressChanged(this.OnAssetFileListDownloadProgressChanged);
+            this.assetDownloader.OnAssetFileListDownloadCompleted += new AssetDownloader.AssetFileListDownloadCompleted(this.OnAssetFileListDownloadCompleted);
+            this.assetDownloader.OnAssetDownloadBegin += new AssetDownloader.AssetDownloadBegin(this.OnAssetDownloadBegin);
+            this.assetDownloader.OnAssetDownloadProgressChanged += new AssetDownloader.AssetDownloadProgressChanged(this.OnAssetDownloadProgressChanged);
+            this.assetDownloader.OnAssetDownloadCompleted += new AssetDownloader.AssetDownloadCompleted(this.OnAssetDownloadCompleted);
+        }
+
+        /// <summary>
+        /// Called when our launcher assets are done downloading
+        /// </summary>
+        public void OnUpdatingLauncherFinished()
+        {
+            this.lblStatus.Text = "Updating completed... restarting.";
+            System.Threading.Thread.Sleep(1000);
+            new Process()
+            {
+                StartInfo = 
+                { 
+                    FileName = Path.Combine(Environment.CurrentDirectory, "InfantryLauncher.exe")
+                }
+            }.Start();
+            Application.Exit();
+        }
+
+        /// <summary>
+        /// Called when our infantry assets are done downloading
+        /// </summary>
+        public void OnUpdatingFinished()
+        {
+            this.btnPlay.Enabled = true;
+            this.lblStatus.Text = "Updating complete...";
+        }
+
+        private void SetFileCounts(int p, int numTotalDownloads)
+        {
+            this.curFileCounts = string.Format("{0}/{1}", (object)p.ToString(), (object)numTotalDownloads.ToString());
+            this.lblStatus.Text = string.Format("{0}  |  {1}", (object)this.curFileCounts, (object)this.curFileName);
+        }
+
+        private void SetCurrentTask(string p)
+        {
+            this.lblStatus.Text = p;
+        }
+
+        private void SetFilename(string p)
+        {
+            this.curFileName = p;
+            this.lblStatus.Text = string.Format("{0}  |  {1}", (object)this.curFileCounts, (object)this.curFileName);
+        }
+
+        private void SetProgress(int totalPercentage)
+        {
+            this.progressBar.Value = totalPercentage;
+        }
+
+        private void DownloadAsset(AssetDownloader.AssetDescriptor asset)
+        {
+            this.assetDownloader.DownloadAsset(asset);
+        }
+
+        private void UpdateAssets(List<AssetDownloader.AssetDescriptor> assetList)
+        {
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += new DoWorkEventHandler(this.Md5BackgroundWorker);
+            backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(this.Md5BackgroundWorkerReportProgress);
+            backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.Md5BackgroundWorkerCompleted);
+            backgroundWorker.WorkerReportsProgress = true;
+            this.numFilesDownloaded = 0;
+            this.numTotalDownloads = assetList.Count;
+            this.SetCurrentTask("Calculating checksum...");
+            backgroundWorker.RunWorkerAsync((object)assetList);
+        }
+
+        private void Md5BackgroundWorker(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker backgroundWorker = sender as BackgroundWorker;
+            List<AssetDownloader.AssetDescriptor> list1 = (List<AssetDownloader.AssetDescriptor>)e.Argument;
+            List<AssetDownloader.AssetDescriptor> list2 = new List<AssetDownloader.AssetDescriptor>();
+            foreach (AssetDownloader.AssetDescriptor assetDescriptor in list1)
+            {
+                string str = Path.Combine(this.GameDirectory, assetDescriptor.Name);
+                if (!System.IO.File.Exists(str) || this.GetMD5HashFromFile(str) != assetDescriptor.Md5Hash && this.GetMD5HashFromFile(str) != "skip")
+                    list2.Add(assetDescriptor);
+                backgroundWorker.ReportProgress(100);
+            }
+            e.Result = (object)list2;
+        }
+
+        private void Md5BackgroundWorkerReportProgress(object sender, ProgressChangedEventArgs e)
+        {
+            this.SetFileCounts(++this.numFilesDownloaded, this.numTotalDownloads);
+            this.SetProgress((int)Math.Ceiling((double)this.numFilesDownloaded / (double)this.numTotalDownloads * 100.0));
+        }
+
+        private void Md5BackgroundWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            List<AssetDownloader.AssetDescriptor> list = e.Result as List<AssetDownloader.AssetDescriptor>;
+            if (list.Count == 0)
+            {
+                if (!updateLauncher)
+                    this.OnUpdatingFinished();
+                else
+                    updateLauncher = false;
+            }
+            else
+            {
+                this.numFilesDownloaded = 0;
+                this.numTotalDownloads = list.Count;
+                this.SetFileCounts(0, this.numTotalDownloads);
+                foreach (AssetDownloader.AssetDescriptor asset in list)
+                    this.DownloadAsset(asset);
+            }
+        }
+
+        private string GetMD5HashFromFile(string fileName)
+        {
+            try
+            {
+                FileStream fileStream = new FileStream(fileName, FileMode.Open);
+                byte[] hash = new MD5CryptoServiceProvider().ComputeHash((Stream)fileStream);
+                fileStream.Close();
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int index = 0; index < hash.Length; ++index)
+                    stringBuilder.Append(hash[index].ToString("X2"));
+                return ((object)stringBuilder).ToString();
+            }
+            catch (IOException)
+            {
+                return "skip";
+            }
+            catch (Exception ex)
+            {
+                int num = (int)MessageBox.Show(ex.Message);
+                return "skip";
+            }
+        }
+
+        private void OnAssetFileListDownloadProgressChanged(int totalPercentage)
+        {
+        }
+
+        private void OnAssetFileListDownloadCompleted(List<AssetDownloader.AssetDescriptor> assetList)
+        {
+            this.GameDirectory = Environment.CurrentDirectory;
+            this.settings.Save();
+            this.WriteRegistryKeys();
+            this.UpdateAssets(assetList);
+        }
+
+        private void OnAssetDownloadBegin(AssetDownloader.AssetDescriptor asset)
+        {
+            this.SetFilename(asset.Name);
+        }
+
+        private void OnAssetDownloadProgressChanged(int totalPercentage)
+        {
+            this.SetProgress(totalPercentage);
+        }
+
+        private void OnAssetDownloadCompleted(Asset asset)
+        {
+            using (FileStream fileStream = System.IO.File.Create(Path.Combine(this.GameDirectory, asset.FileName)))
+            {
+                using (MemoryStream memoryStream = new MemoryStream(asset.Data))
+                {
+                    using (GZipStream gzipStream = new GZipStream((Stream)memoryStream, CompressionMode.Decompress))
+                        gzipStream.CopyTo((Stream)fileStream);
+                }
+            }
+            this.downloadList.Remove(asset.Descriptor);
+            ++this.numFilesDownloaded;
+            this.SetFileCounts(this.numFilesDownloaded, this.numTotalDownloads);
+            if (this.numFilesDownloaded != this.numTotalDownloads)
+                return;
+            //Was this an update to our launcher?
+            if (!updateLauncher) //No
+                this.OnUpdatingFinished();
+            else //Yes
+                this.OnUpdatingLauncherFinished();
+        }
+        #endregion
+
+        #region Misc Private Calls
+        private AccountServer.PingRequestStatusCode PingServer(string url)
+        {
+            switch (AccountServer.PingAccount(url))
+            {
+                default:
+                case AccountServer.PingRequestStatusCode.NotFound:
+                    return AccountServer.PingRequestStatusCode.NotFound;
+                case AccountServer.PingRequestStatusCode.Ok:
+                    return AccountServer.PingRequestStatusCode.Ok;
+            }
+        }
+
+        private void WriteRegistryKeys()
+        {
+            for (int index = 0; index <= 5; ++index)
+            {
+                RegistryKey subKey = Registry.CurrentUser.CreateSubKey(string.Format("Software\\HarmlessGames\\Infantry\\Profile{0}\\Options", (object)index));
+                subKey.SetValue("SDirectoryAddress", (object)this.settings["Launcher"]["Directory1"]);
+                subKey.SetValue("SDirectoryAddressBackup", (object)this.settings["Launcher"]["Directory2"]);
+            }
+        }
+        #endregion
     }
 }
