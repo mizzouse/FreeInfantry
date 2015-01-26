@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: InfantryLauncher.Protocol.AssetDownloader
-// Assembly: InfantryLauncher, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BCEC389A-35DE-4913-97AA-CBDD8E941EC4
-// Assembly location: C:\Program Files (x86)\Infantry Online\InfantryLauncher.exe
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
