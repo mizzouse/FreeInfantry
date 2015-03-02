@@ -96,9 +96,8 @@ namespace InfCompress
                                         compressed += fout.Length;
                                     }
                                 }
-                                break;
                             }
-
+                            break;
 
                         default:
                             Console.WriteLine("Improper compression technique set!");
@@ -129,7 +128,8 @@ namespace InfCompress
             writer.Close();
             Console.WriteLine("{0} bytes compressed to {1} bytes", uncompressed, compressed);
             Console.WriteLine("Done, press any key to exit.");
-            Console.Read();
+            if (Console.KeyAvailable)
+                return;
         }
 
         private static string GetMD5HashFromFile(string fileName)
